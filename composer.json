@@ -1,0 +1,15 @@
+{
+    "name": "",
+    "description": "",
+    "license": "",
+    "keywords": [],
+    "authors": [],
+    "require": {
+        "silex/silex": "~1.2"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-0": {
+        }
+    }
+}
