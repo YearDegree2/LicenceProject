@@ -30,7 +30,7 @@ $app->get("/login", function (Request $request) use ($app) {
     }
 
     return new Response('Language needed: French or English', 400);
-})->bind('login');
+});
 
 $app->get("/admin", function () use ($app) {
     return new Response('Admin connecte', 200);
