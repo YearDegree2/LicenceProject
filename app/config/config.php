@@ -33,11 +33,12 @@ $app['security.firewalls'] = [
         'pattern' => '^/admin',
         'form' => [
             'login_path' => '/login',
-            'check_path' => '/admin/login_check'
+            'check_path' => '/admin/login_check',
+            'default_target_path' => '/admin',
         ],
         'logout' => [
             'logout_path' => '/admin/logout',
-            'invalidate_session' => false
+            'invalidate_session' => false,
         ],
         'users' => $app->share(function () use ($app) {
             return new UserProvider($app['db']);
