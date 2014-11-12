@@ -5,11 +5,16 @@
     "keywords": [],
     "authors": [],
     "require": {
-        "silex/silex": "~1.2"
+        "silex/silex": "~1.2",
+        "doctrine/dbal": "~2.2",
+        "symfony/security": "~2.3",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "symfony/twig-bridge": "~2.3"
     },
     "require-dev": {},
     "autoload": {
         "psr-0": {
+            "Appli": "src/"
         }
     }
 }
