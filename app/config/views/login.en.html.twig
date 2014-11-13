@@ -1,0 +1,12 @@
+Please identify
+<form action='{{ path('admin_login_check') }}' method='post'>
+    <label for='_username'>Login</label>
+    <input type='text' name='_username' id='_username' value='{{ last_username }}'/><br/>
+    <label for='_password'>Password</label>
+    <input type='password' name='_password' id='_password' value=''/><br/>
+    <input type='submit' value='Submit'/><br/>
+    {% if error %}
+        Invalid login/password
+    {% endif %}
+
+</form>
