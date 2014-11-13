@@ -36,4 +36,17 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
+$app->get('/admin/categories', function () use ($app) {
+    $sqlRequest = 'SELECT * FROM categorie';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    $categories = array();
+    foreach ($results as $row) {
+        array_push($categories, $row);
+    }
+    $jsonCategories = json_encode($categories);
+
+    return new Response($jsonCategories, 200);
+});
+
 return $app;
