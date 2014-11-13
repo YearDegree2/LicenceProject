@@ -36,4 +36,20 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
+$app->get("/admin/menus", function () use ($app) {
+    $query = $app['db']->executeQuery('SELECT * FROM menu ');
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $unMenu) {
+        array_push($menus, $unMenu);
+    }
+    //var_dump($menus);
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+})->bind('menus');
+
 return $app;
