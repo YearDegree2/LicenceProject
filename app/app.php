@@ -40,6 +40,9 @@ $app->get('/admin/categories', function () use ($app) {
     $sqlRequest = 'SELECT * FROM categorie';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
     $categories = array();
     foreach ($results as $row) {
         array_push($categories, $row);
