@@ -15,9 +15,4 @@
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory>./src/Appli/</directory>
-        </whitelist>
-    </filter>
 </phpunit>
