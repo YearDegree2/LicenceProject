@@ -49,4 +49,16 @@ $app->get('/admin/categories', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
+$app->get('/admin/categories/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
+    //$query = $app['db']->executeQuery($sqlRequest);
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $jsonCategorie = json_encode($result);
+
+    return new Response($jsonCategorie, 200);
+});
+
 return $app;
