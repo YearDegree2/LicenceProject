@@ -29,4 +29,23 @@ class CategorieTest extends WebTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
+
+    public function testGetAllCategories()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/categories', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('International and national conferences', $client->getResponse()->getContent());
+    }
+
 }
