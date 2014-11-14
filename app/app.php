@@ -43,13 +43,23 @@ $app->get("/admin/menus", function () use ($app) {
         return new Response(null, 400);
     }
     $menus = array();
-    foreach ($results as $unMenu) {
-        array_push($menus, $unMenu);
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
     }
-    //var_dump($menus);
     $jsonMenus = json_encode($menus);
 
     return new Response($jsonMenus, 200);
-})->bind('menus');
+});
+
+$app->get('/admin/menus/{id}', function ($id) use ($app) {
+    $req = 'SELECT * FROM menu WHERE ID = ?';
+    $results = $app['db']->fetchAssoc($req, array((int) $id));
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $jsonMenu = json_encode($results);
+
+    return new Response($jsonMenu, 200);
+});
 
 return $app;
