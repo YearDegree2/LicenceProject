@@ -48,4 +48,21 @@ class CategorieTest extends WebTestCase
         $this->assertContains('International and national conferences', $client->getResponse()->getContent());
     }
 
+    public function testGetCategorieByExistingId()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/categories/1', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"ID":"1","name_fr":"Conferences nationales et internationales","name_en":"International and national conferences"}',
+                    $client->getResponse()->getContent());
+    }
 }
