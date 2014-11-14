@@ -53,11 +53,11 @@ $app->get("/admin/menus", function () use ($app) {
 
 $app->get('/admin/menus/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu WHERE ID = ?';
-    $results = $app['db']->fetchAssoc($req, array((int) $id));
-    if (null == $results) {
+    $result = $app['db']->fetchAssoc($req, array((int) $id));
+    if (null == $result) {
         return new Response(null, 400);
     }
-    $jsonMenu = json_encode($results);
+    $jsonMenu = json_encode($result);
 
     return new Response($jsonMenu, 200);
 });
