@@ -77,4 +77,15 @@ $app->get("/admin/rubriques", function () use ($app) {
     return new Response($jsonMenus, 200);
 });
 
+$app->get("/admin/rubriques/{id}", function ($id) use ($app) {
+    $req = 'SELECT * FROM menu, rubrique WHERE (rubrique.menu_id = menu.id AND menu.id = ?)';
+    $result = $app['db']->fetchAssoc($req, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $jsonMenu = json_encode($result);
+
+    return new Response($jsonMenu, 200);
+});
+
 return $app;
