@@ -70,4 +70,23 @@ class MenuTest extends WebTestCase
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
 
+    public function testAdminPageRubriquesId()
+    {
+        $expected = '{"ID":"3","titre_fr":"Publications","titre_en":"Publications","actif":"1","position":"7","date_creation":"2014-11-14","date_modification":"2014-11-14","content_fr":"Bienvenue sur mes publications","content_en":"Welcome","menu_id":"3"}';
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/3');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals($expected, $client->getResponse()->getContent());
+    }
+
 }
