@@ -89,4 +89,12 @@ class MenuTest extends WebTestCase
         $this->assertEquals($expected, $client->getResponse()->getContent());
     }
 
+    public function testAdminPageRubriquesIdWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/3');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
 }
