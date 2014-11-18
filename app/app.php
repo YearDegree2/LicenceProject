@@ -36,6 +36,8 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
+// Categorie
+
 $app->post('/admin/categorie', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
@@ -121,6 +123,8 @@ $app->delete('/admin/categories', function () use ($app) {
     return new Response(null, 200);
 });
 
+// Menu
+
 $app->get("/admin/menus", function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu ');
     $results = $query->fetchAll();
@@ -135,6 +139,7 @@ $app->get("/admin/menus", function () use ($app) {
 
     return new Response($jsonMenus, 200);
 });
+
 $app->get('/admin/menus/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu WHERE ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
@@ -144,6 +149,68 @@ $app->get('/admin/menus/{id}', function ($id) use ($app) {
     $jsonMenu = json_encode($result);
 
     return new Response($jsonMenu, 200);
+});
+
+// Publication
+
+$app->post('/admin/publication', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $categorieArray = json_decode($request->getContent());
+    if (!isset($categorieArray->{'reference'}) || !isset($categorieArray->{'auteurs'})
+        || !isset($categorieArray->{'titre'}) || !isset($categorieArray->{'date'})) {
+        return new Response(null, 404);
+    }
+    if (!isset($categorieArray->{'ID'})) {
+        $sqlRequest = 'INSERT INTO publication VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        $app['db']->executeUpdate($sqlRequest, array(
+            $categorieArray->{'reference'},
+            $categorieArray->{'auteurs'},
+            $categorieArray->{'titre'},
+            $categorieArray->{'date'},
+            isset($categorieArray->{'journal'}) ? $categorieArray->{'journal'} : null,
+            isset($categorieArray->{'volume'}) ? $categorieArray->{'volume'} : null,
+            isset($categorieArray->{'number'}) ? $categorieArray->{'number'} : null,
+            isset($categorieArray->{'pages'}) ? $categorieArray->{'pages'} : null,
+            isset($categorieArray->{'note'}) ? $categorieArray->{'note'} : null,
+            isset($categorieArray->{'abstract'}) ? $categorieArray->{'abstract'} : null,
+            isset($categorieArray->{'keywords'}) ? $categorieArray->{'keywords'} : null,
+            isset($categorieArray->{'series'}) ? $categorieArray->{'series'} : null,
+            isset($categorieArray->{'localite'}) ? $categorieArray->{'localite'} : null,
+            isset($categorieArray->{'publisher'}) ? $categorieArray->{'publisher'} : null,
+            isset($categorieArray->{'editor'}) ? $categorieArray->{'editor'} : null,
+            isset($categorieArray->{'pdf'}) ? $categorieArray->{'pdf'} : null,
+            isset($categorieArray->{'date_display'}) ? $categorieArray->{'date_display'} : null,
+            isset($categorieArray->{'categorie_id'}) ? $categorieArray->{'categorie_id'} : null,
+        ));
+
+        return new Response(null, 200);
+    }
+    $sqlRequest = 'INSERT INTO publication VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    $app['db']->executeUpdate($sqlRequest, array(
+        $categorieArray->{'ID'},
+        $categorieArray->{'reference'},
+        $categorieArray->{'auteurs'},
+        $categorieArray->{'titre'},
+        $categorieArray->{'date'},
+        isset($categorieArray->{'journal'}) ? $categorieArray->{'journal'} : null,
+        isset($categorieArray->{'volume'}) ? $categorieArray->{'volume'} : null,
+        isset($categorieArray->{'number'}) ? $categorieArray->{'number'} : null,
+        isset($categorieArray->{'pages'}) ? $categorieArray->{'pages'} : null,
+        isset($categorieArray->{'note'}) ? $categorieArray->{'note'} : null,
+        isset($categorieArray->{'abstract'}) ? $categorieArray->{'abstract'} : null,
+        isset($categorieArray->{'keywords'}) ? $categorieArray->{'keywords'} : null,
+        isset($categorieArray->{'series'}) ? $categorieArray->{'series'} : null,
+        isset($categorieArray->{'localite'}) ? $categorieArray->{'localite'} : null,
+        isset($categorieArray->{'publisher'}) ? $categorieArray->{'publisher'} : null,
+        isset($categorieArray->{'editor'}) ? $categorieArray->{'editor'} : null,
+        isset($categorieArray->{'pdf'}) ? $categorieArray->{'pdf'} : null,
+        isset($categorieArray->{'date_display'}) ? $categorieArray->{'date_display'} : null,
+        isset($categorieArray->{'categorie_id'}) ? $categorieArray->{'categorie_id'} : null,
+    ));
+
+    return new Response(null, 200);
 });
 
 return $app;
