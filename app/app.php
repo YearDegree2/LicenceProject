@@ -229,6 +229,39 @@ $app->get('/admin/publications', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
+// Tri de la plus recente a la plus ancienne
+$app->get('/admin/publications/date', function () use ($app) {
+    $sqlRequest = 'SELECT * FROM publication ORDER BY date DESC';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $categories = array();
+    foreach ($results as $row) {
+        array_push($categories, $row);
+    }
+    $jsonCategories = json_encode($categories);
+
+    return new Response($jsonCategories, 200);
+});
+
+$app->get('/admin/publications/categorie', function () use ($app) {
+    $sqlRequest = 'SELECT * FROM publication ORDER BY categorie_id';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $categories = array();
+    foreach ($results as $row) {
+        array_push($categories, $row);
+    }
+    $jsonCategories = json_encode($categories);
+
+    return new Response($jsonCategories, 200);
+});
+
 $app->get('/admin/publications/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
