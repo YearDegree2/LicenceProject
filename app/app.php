@@ -229,6 +229,17 @@ $app->get('/admin/publications', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
+$app->get('/admin/publications/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $jsonCategorie = json_encode($result);
+
+    return new Response($jsonCategorie, 200);
+});
+
 $app->delete('/admin/publications/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
