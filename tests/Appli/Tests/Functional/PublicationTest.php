@@ -14,6 +14,23 @@ class PublicationTest extends WebTestCase
         return $app;
     }
 
+    public function testGetAllPublicationsWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testPostPublicationWithoutConnection()
     {
         $client = $this->createClient();
@@ -205,6 +222,32 @@ class PublicationTest extends WebTestCase
             '{"reference":"SR08a", "auteurs":"S. Salva, A. Rollet", "titre":"Testabilite des services web", "date": "2008-05-01", "journal": "Ingenierie des Systemes d\'Information RSTI", "volume": "Volume 13", "number": "number 3", "pages": "p. 35-58", "note": "aucune note", "abstract": "resume", "keywords": "test,services web", "series": "serie", "localite": "Clermont", "publisher": "ISI", "editor": "myEditor", "pdf": "useruploads/files/SR08a.pdf", "date_display": "May-June 2008", "categorie_id":2}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetAllPublicationsWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetAllPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
     }
 
     public function testDeletePublicationWithoutConnection()
