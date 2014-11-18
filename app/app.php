@@ -213,4 +213,22 @@ $app->post('/admin/publication', function (Request $request) use ($app) {
     return new Response(null, 200);
 });
 
+$app->delete('/admin/publications/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $sqlRequest = 'DELETE FROM publication WHERE ID = ?';
+    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+
+    return new Response(null, 200);
+});
+
+$app->delete('/admin/publications', function () use ($app) {
+    $sqlRequest = 'DELETE FROM publication WHERE 1';
+    $app['db']->executeUpdate($sqlRequest);
+
+    return new Response(null, 200);
+});
 return $app;
