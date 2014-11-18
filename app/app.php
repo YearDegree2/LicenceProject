@@ -36,6 +36,26 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
+$app->post('/admin/categorie', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $categorieArray = json_decode($request->getContent());
+    if (!isset($categorieArray->{'name_fr'}) || !isset($categorieArray->{'name_en'})) {
+        return new Response(null, 404);
+    }
+    if (!isset($categorieArray->{'ID'})) {
+        $sqlRequest = 'INSERT INTO categorie VALUES (null, ?, ?)';
+        $app['db']->executeUpdate($sqlRequest, array($categorieArray->{'name_fr'}, $categorieArray->{'name_en'}));
+
+        return new Response(null, 200);
+    }
+    $sqlRequest = 'INSERT INTO categorie VALUES (?, ?, ?)';
+    $app['db']->executeUpdate($sqlRequest, array($categorieArray->{'ID'}, $categorieArray->{'name_fr'}, $categorieArray->{'name_en'}));
+
+    return new Response(null, 200);
+});
+
 $app->get('/admin/categories', function () use ($app) {
     $sqlRequest = 'SELECT * FROM categorie';
     $query = $app['db']->executeQuery($sqlRequest);
@@ -54,7 +74,6 @@ $app->get('/admin/categories', function () use ($app) {
 
 $app->get('/admin/categories/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
-    //$query = $app['db']->executeQuery($sqlRequest);
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
         return new Response(null, 400);
