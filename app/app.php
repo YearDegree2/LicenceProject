@@ -83,4 +83,23 @@ $app->get('/admin/categories/{id}', function ($id) use ($app) {
     return new Response($jsonCategorie, 200);
 });
 
+$app->put('/admin/categories/{id}', function (Request $request, $id) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $categorieArray = json_decode($request->getContent());
+    if (!isset($categorieArray->{'name_fr'}) || !isset($categorieArray->{'name_en'})) {
+        return new Response('trt', 404);
+    }
+    $sqlRequest = 'UPDATE categorie SET name_fr = ?, name_en = ? WHERE ID = ?';
+    $app['db']->executeUpdate($sqlRequest, array($categorieArray->{'name_fr'}, $categorieArray->{'name_en'},  $id));
+
+    return new Response(null, 200);
+});
+
 return $app;
