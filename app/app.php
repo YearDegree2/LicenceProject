@@ -132,6 +132,7 @@ $app->get("/admin/menus", function () use ($app) {
         array_push($menus, $menu);
     }
     $jsonMenus = json_encode($menus);
+
     return new Response($jsonMenus, 200);
 });
 $app->get('/admin/menus/{id}', function ($id) use ($app) {
@@ -141,6 +142,7 @@ $app->get('/admin/menus/{id}', function ($id) use ($app) {
         return new Response(null, 400);
     }
     $jsonMenu = json_encode($result);
+
     return new Response($jsonMenu, 200);
 });
 
