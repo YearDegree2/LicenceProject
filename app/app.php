@@ -94,10 +94,29 @@ $app->put('/admin/categories/{id}', function (Request $request, $id) use ($app) 
     }
     $categorieArray = json_decode($request->getContent());
     if (!isset($categorieArray->{'name_fr'}) || !isset($categorieArray->{'name_en'})) {
-        return new Response('trt', 404);
+        return new Response(null, 404);
     }
     $sqlRequest = 'UPDATE categorie SET name_fr = ?, name_en = ? WHERE ID = ?';
     $app['db']->executeUpdate($sqlRequest, array($categorieArray->{'name_fr'}, $categorieArray->{'name_en'},  $id));
+
+    return new Response(null, 200);
+});
+
+$app->delete('/admin/categories/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $sqlRequest = 'DELETE FROM categorie WHERE ID = ?';
+    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+
+    return new Response(null, 200);
+});
+
+$app->delete('/admin/categories', function () use ($app) {
+    $sqlRequest = 'DELETE FROM categorie WHERE 1';
+    $app['db']->executeUpdate($sqlRequest);
 
     return new Response(null, 200);
 });
