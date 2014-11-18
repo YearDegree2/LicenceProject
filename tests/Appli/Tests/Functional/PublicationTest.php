@@ -31,6 +31,40 @@ class PublicationTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
+    public function testGetPublicationsDateWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/date', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsCategorieWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/categorie', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testPostPublicationWithoutConnection()
     {
         $client = $this->createClient();
@@ -248,6 +282,56 @@ class PublicationTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
         $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationDateWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/date');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationDate()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/date', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertNotNull($client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationCategorieWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/categorie');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationCategorie()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/categorie', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertNotNull($client->getResponse()->getContent());
     }
 
     public function testGetPublicationByIdWithoutConnection()
