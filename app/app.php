@@ -46,7 +46,12 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
     }
     if (!isset($rubriqueArray->{'ID'})) {
         $sqlRequest = 'INSERT INTO menu VALUES (null, ?, ?, ?, ?)';
-        $app['db']->executeUpdate($sqlRequest, array($rubriqueArray->{'titre_fr'}, $rubriqueArray->{'titre_en'}, $rubriqueArray->{'actif'}, $rubriqueArray->{'position'}));
+        $app['db']->executeUpdate($sqlRequest, array(
+            $rubriqueArray->{'titre_fr'},
+            $rubriqueArray->{'titre_en'},
+            isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
+            isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'actif'} : null,
+            ));
 
         $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', (SELECT max(ID) FROM menu))";
         $app['db']->executeUpdate($sqlRequest);
@@ -54,7 +59,13 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         return new Response(null, 200);
     }
     $sqlRequest = 'INSERT INTO menu VALUES (?, ?, ?, ?, ?)';
-    $app['db']->executeUpdate($sqlRequest, array($rubriqueArray->{'ID'}, $rubriqueArray->{'titre_fr'}, $rubriqueArray->{'titre_en'}, $rubriqueArray->{'actif'}, $rubriqueArray->{'position'}));
+    $app['db']->executeUpdate($sqlRequest, array(
+        $rubriqueArray->{'ID'},
+        $rubriqueArray->{'titre_fr'},
+        $rubriqueArray->{'titre_en'},
+        isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
+        isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'actif'} : null,
+        ));
 
     $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', ?)";
     $app['db']->executeUpdate($sqlRequest, array($rubriqueArray->{'ID'}));

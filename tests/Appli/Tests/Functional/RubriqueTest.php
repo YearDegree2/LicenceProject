@@ -3,7 +3,7 @@ namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
 
-class CategorieTest extends WebTestCase
+class RubriqueTest extends WebTestCase
 {
     public function createApplication()
     {
@@ -14,10 +14,10 @@ class CategorieTest extends WebTestCase
         return $app;
     }
 
-    /*public function testGetAllCategoriesWithoutCategories()
+    /*public function testGetAllRubriquesWithoutRubriques()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin/categories', array(), array(), array(
+        $crawler = $client->request('GET', '/admin/rubriques', array(), array(), array(
             'CONTENT_TYPE'  => 'en'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Submit');
@@ -43,17 +43,15 @@ class CategorieTest extends WebTestCase
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'fr'
+        'CONTENT_TYPE' => 'en'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Submit');
         $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
+        '_username' => 'admin',
+        '_password' => 'admin',
         ));
         $client->submit($form);
-
         $client->request('POST', '/admin/rubrique', array(), array(), array(), null);
-
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -62,9 +60,9 @@ class CategorieTest extends WebTestCase
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
+            'CONTENT_TYPE'  => 'fr'
         ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
         $form = $buttonCrawlerNode->form(array(
             '_username' => 'admin',
             '_password' => 'admin',
@@ -77,10 +75,24 @@ class CategorieTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
-    /*public function testPostCategorieWithoutTitreEN()
+    public function testPostRubriqueWithoutTitreEN()
     {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
 
-    }*/
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"test1fr","actif":1,"position":7}');
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
 
     public function testPostRubriqueWithoutID()
     {
@@ -192,172 +204,4 @@ class CategorieTest extends WebTestCase
         $this->assertEquals($expected, $client->getResponse()->getContent());
     }
 
-    /*public function testUpdateCategorieWithoutConnection()
-    {
-        $client = $this->createClient();
-        $client->request('PUT', '/admin/categories/2');
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
-    }
-
-    public function testUpdateCategorieWithoutContent()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('PUT', '/admin/categories/2', array(), array(), array(), null);
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testUpdateCategorieByNonExistingId()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('PUT', '/admin/categories/1000', array(), array(), array(), '{"name_fr":"Conferences nationales","name_en":"National conferences"}');
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testUpdateCategorieWithoutNameFR()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('PUT', '/admin/categories/2', array(), array(), array(), '{"name_en":"National conferences"}');
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testUpdateCategorieWithoutNameEN()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('PUT', '/admin/categories/2', array(), array(), array(), '{"name_fr":"Conferences nationales"}');
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testUpdateCategorie()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('PUT', '/admin/categories/2', array(), array(), array(), '{"name_fr":"Conferences nationales","name_en":"National conferences"}');
-        //$this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testDeleteCategorieWithoutConnection()
-    {
-        $client = $this->createClient();
-        $client->request('DELETE', '/admin/categories/2');
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
-    }
-
-    public function testDeleteCategorieByNonExistingId()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('DELETE', '/admin/categories/1000', array(), array(), array(), null);
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testDeleteCategorieByExistingId()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('DELETE', '/admin/categories/2', array(), array(), array(), null);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-
-    public function testDeleteAllCategorieWithoutConnection()
-    {
-        $client = $this->createClient();
-        $client->request('DELETE', '/admin/categories');
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
-    }
-
-    public function testDeleteAllCategorie()
-    {
-        $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
-            'CONTENT_TYPE'  => 'en'
-        ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Submit');
-        $form = $buttonCrawlerNode->form(array(
-            '_username' => 'admin',
-            '_password' => 'admin',
-        ));
-        $client->submit($form);
-
-        $client->request('DELETE', '/admin/categories', array(), array(), array(), null);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals(null, $client->getResponse()->getContent());
-    }
-    */
 }
