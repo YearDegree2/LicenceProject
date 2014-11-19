@@ -99,6 +99,43 @@ $app->get("/admin/rubriques/{id}", function ($id) use ($app) {
     return new Response($jsonMenu, 200);
 });
 
+$app->put('/admin/rubrique/{id}', function (Request $request, $id) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+
+    $sqlRequest = 'SELECT * FROM menu WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $rubriqueArray = json_decode($request->getContent());
+    if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'})) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'UPDATE menu SET titre_fr = ?, titre_en = ?';
+    $values = array($rubriqueArray->{'titre_fr'}, $rubriqueArray->{'titre_en'});
+
+    if (isset($rubriqueArray->{'actif'})) {
+        $sqlRequest .= ', actif = ?';
+        array_push($values, $rubriqueArray->{'actif'});
+    }
+    if (isset($rubriqueArray->{'position'})) {
+        $sqlRequest .= ', position = ?';
+        array_push($values, $rubriqueArray->{'position'});
+    }
+
+    $sqlRequest .= ' WHERE ID = ?';
+    array_push($values, $id);
+
+    $app['db']->executeUpdate($sqlRequest, $values);
+
+    $sqlRequest = 'UPDATE rubrique SET date_modification = (SELECT NOW()) WHERE menu_id = ?';
+    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+
+    return new Response(null, 200);
+});
+
 $app->get("/admin/menus", function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu ');
     $results = $query->fetchAll();
