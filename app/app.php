@@ -273,6 +273,100 @@ $app->get('/admin/publications/{id}', function ($id) use ($app) {
     return new Response($jsonCategorie, 200);
 });
 
+$app->put('/admin/publications/{id}', function (Request $request, $id) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+    $categorieArray = json_decode($request->getContent());
+    if (!isset($categorieArray->{'reference'})) {
+        return new Response(null, 400);
+    }
+
+    $sqlRequest = 'UPDATE publication SET reference = ?';
+    $values = array($categorieArray->{'reference'});
+
+    if (isset($categorieArray->{'auteurs'})) {
+        $sqlRequest .= ', auteurs = ?';
+        array_push($values, $categorieArray->{'auteurs'});
+    }
+    if (isset($categorieArray->{'titre'})) {
+        $sqlRequest .= ', titre = ?';
+        array_push($values, $categorieArray->{'titre'});
+    }
+    if (isset($categorieArray->{'date'})) {
+        $sqlRequest .= ', date = ?';
+        array_push($values, $categorieArray->{'date'});
+    }
+    if (isset($categorieArray->{'journal'})) {
+        $sqlRequest .= ', journal = ?';
+        array_push($values, $categorieArray->{'journal'});
+    }
+    if (isset($categorieArray->{'volume'})) {
+        $sqlRequest .= ', volume = ?';
+        array_push($values, $categorieArray->{'volume'});
+    }
+    if (isset($categorieArray->{'number'})) {
+        $sqlRequest .= ', number = ?';
+        array_push($values, $categorieArray->{'number'});
+    }
+    if (isset($categorieArray->{'pages'})) {
+        $sqlRequest .= ', pages = ?';
+        array_push($values, $categorieArray->{'pages'});
+    }
+    if (isset($categorieArray->{'note'})) {
+        $sqlRequest .= ', note = ?';
+        array_push($values, $categorieArray->{'note'});
+    }
+    if (isset($categorieArray->{'abstract'})) {
+        $sqlRequest .= ', abstract = ?';
+        array_push($values, $categorieArray->{'abstract'});
+    }
+    if (isset($categorieArray->{'keywords'})) {
+        $sqlRequest .= ', keywords = ?';
+        array_push($values, $categorieArray->{'keywords'});
+    }
+    if (isset($categorieArray->{'series'})) {
+        $sqlRequest .= ', series = ?';
+        array_push($values, $categorieArray->{'series'});
+    }
+    if (isset($categorieArray->{'localite'})) {
+        $sqlRequest .= ', localite = ?';
+        array_push($values, $categorieArray->{'localite'});
+    }
+    if (isset($categorieArray->{'publisher'})) {
+        $sqlRequest .= ', publisher = ?';
+        array_push($values, $categorieArray->{'publisher'});
+    }
+
+    if (isset($categorieArray->{'editor'})) {
+        $sqlRequest .= ', editor = ?';
+        array_push($values, $categorieArray->{'editor'});
+    }
+    if (isset($categorieArray->{'pdf'})) {
+        $sqlRequest .= ', pdf = ?';
+        array_push($values, $categorieArray->{'pdf'});
+    }
+    if (isset($categorieArray->{'date_display'})) {
+        $sqlRequest .= ', date_display = ?';
+        array_push($values, $categorieArray->{'date_display'});
+    }
+    if (isset($categorieArray->{'categorie_id'})) {
+        $sqlRequest .= ', categorie_id = ?';
+        array_push($values, $categorieArray->{'categorie_id'});
+    }
+    $sqlRequest .= ' WHERE ID = ?';
+    array_push($values, $id);
+
+    $app['db']->executeUpdate($sqlRequest, $values);
+
+    return new Response(null, 200);
+});
+
 $app->delete('/admin/publications/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
