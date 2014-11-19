@@ -40,7 +40,7 @@ class RubriqueTest extends WebTestCase
     public function testPostRubriqueWithoutConnection()
     {
         $client = $this->createClient();
-        $client->request('POST', '/admin/rubriques');
+        $client->request('POST', '/admin/rubrique');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
@@ -57,7 +57,7 @@ class RubriqueTest extends WebTestCase
         '_password' => 'admin',
         ));
         $client->submit($form);
-        $client->request('POST', '/admin/rubriques', array(), array(), array(), null);
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), null);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -75,7 +75,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"titre_en":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_en":"Home","actif":1,"position":2}');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
@@ -94,7 +94,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"titre_fr":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Home","actif":1,"position":2}');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
@@ -113,7 +113,7 @@ class RubriqueTest extends WebTestCase
     ));
     $client->submit($form);
 
-    $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"titre_fr":"home","titre_en":"home","actif":1,"position":2}');
+    $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"home","titre_en":"home","actif":1,"position":2}');
 
     $this->assertEquals(200, $client->getResponse()->getStatusCode());
     $this->assertEquals(null, $client->getResponse()->getContent());
@@ -133,7 +133,7 @@ class RubriqueTest extends WebTestCase
     ));
     $client->submit($form);
 
-    $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
+    $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
 
     $this->assertEquals(200, $client->getResponse()->getStatusCode());
     $this->assertEquals(null, $client->getResponse()->getContent());

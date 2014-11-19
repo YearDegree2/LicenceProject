@@ -36,7 +36,7 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
-$app->post('/admin/rubriques', function (Request $request) use ($app) {
+$app->post('/admin/rubrique', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
     }

@@ -38,8 +38,8 @@ class MenuTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"ID":8,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
-        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"ID":9,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":8,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":9,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
 
         $client->request('GET', '/admin/menus');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
