@@ -11,7 +11,7 @@ $app->get('/', function () use ($app) {
 
 $app->get('/login', function (Request $request) use ($app) {
     /* A Enlever mais pour l'instant je laisse pour tester avec localhost, si on veut tester phpunit, l'enlever*/
-    $request->headers->add(array(
+    /*$request->headers->add(array(
             'Content-Type' => 'fr',
         )
     );
@@ -36,7 +36,7 @@ $app->get('/admin', function () use ($app) {
     return new Response(null, 200);
 });
 
-$app->post('/admin/rubrique', function (Request $request) use ($app) {
+$app->post('/admin/rubriques', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
     }
@@ -50,7 +50,7 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
             $rubriqueArray->{'titre_fr'},
             $rubriqueArray->{'titre_en'},
             isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
-            isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'actif'} : null,
+            isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
             ));
 
         $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', (SELECT max(ID) FROM menu))";
@@ -64,7 +64,7 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         $rubriqueArray->{'titre_fr'},
         $rubriqueArray->{'titre_en'},
         isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
-        isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'actif'} : null,
+        isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
         ));
 
     $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', ?)";
@@ -99,7 +99,7 @@ $app->get("/admin/rubriques/{id}", function ($id) use ($app) {
     return new Response($jsonMenu, 200);
 });
 
-$app->put('/admin/rubrique/{id}', function (Request $request, $id) use ($app) {
+$app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
     }
@@ -132,6 +132,31 @@ $app->put('/admin/rubrique/{id}', function (Request $request, $id) use ($app) {
 
     $sqlRequest = 'UPDATE rubrique SET date_modification = (SELECT NOW()) WHERE menu_id = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));
+
+    return new Response(null, 200);
+});
+
+$app->delete('/admin/rubriques/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM menu WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response(null, 400);
+    }
+
+    $sqlRequest = 'DELETE FROM rubrique WHERE menu_id = ?';
+    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+    $sqlRequest = 'DELETE FROM menu WHERE ID = ?';
+    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+
+    return new Response(null, 200);
+});
+
+$app->delete('/admin/rubriques', function () use ($app) {
+    $sqlRequest = 'DELETE FROM rubrique WHERE 1';
+    $app['db']->executeUpdate($sqlRequest);
+
+    $sqlRequest = 'DELETE FROM menu WHERE 1';
+    $app['db']->executeUpdate($sqlRequest);
 
     return new Response(null, 200);
 });

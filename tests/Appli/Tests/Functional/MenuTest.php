@@ -25,7 +25,8 @@ class MenuTest extends WebTestCase
 
     public function testGetMenuAll()
     {
-        $expected = '[{"ID":"1","titre_fr":"home","titre_en":"home","actif":"1","position":"2"},{"ID":"2","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"},{"ID":"3","titre_fr":"Publications","titre_en":"Publications","actif":"1","position":"7"},{"ID":"4","titre_fr":"Enseignement","titre_en":"Teaching","actif":"1","position":"4"},{"ID":"5","titre_fr":"Outils","titre_en":"Tools","actif":"1","position":"5"},{"ID":"6","titre_fr":"Liens","titre_en":"Links","actif":"1","position":"6"}]';
+        $expected = '[{"ID":"8","titre_fr":"Home","titre_en":"Home","actif":"1","position":"2"},{"ID":"9","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}]';
+
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -37,9 +38,15 @@ class MenuTest extends WebTestCase
         ));
         $client->submit($form);
 
+        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"ID":8,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubriques', array(), array(), array(), '{"ID":9,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
+
         $client->request('GET', '/admin/menus');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($expected, $client->getResponse()->getContent());
+
+        $client->request('DELETE', '/admin/rubriques/8', array(), array(), array(), null);
+        $client->request('DELETE', '/admin/rubriques/9', array(), array(), array(), null);
 
     }
 
