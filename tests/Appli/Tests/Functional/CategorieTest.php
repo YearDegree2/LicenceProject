@@ -297,7 +297,7 @@ class CategorieTest extends WebTestCase
         $client->submit($form);
 
         $client->request('PUT', '/admin/categories/2', array(), array(), array(), '{"name_fr":"Conferences nationales","name_en":"National conferences"}');
-        //$this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
