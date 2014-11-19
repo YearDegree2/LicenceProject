@@ -376,6 +376,106 @@ class PublicationTest extends WebTestCase
         $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
     }
 
+    public function testUpdatePublicationWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('PUT', '/admin/publications/2');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testUpdatePublicationWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('PUT', '/admin/publications/2', array(), array(), array(), null);
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testUpdatePublicationByNonExistingId()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('PUT', '/admin/publications/1000', array(), array(), array(), '{"reference":"SR08a", "auteurs":"S. Salva, A. Rollet", "titre":"Testabilite des services web", "date": "2008-05-01", "categorie_id":2}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testUpdatePublicationWithoutReference()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('PUT', '/admin/publications/2', array(), array(), array(), '{"auteurs":"S. Salva, A. Rollet", "titre":"Testabilite des services web"}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testUpdatePublication()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('PUT', '/admin/publications/2', array(), array(), array(), '{"reference":"SR8a", "titre":"Testabilite des services", "date": "2010-05-01"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testUpdatePublicationAllFieldsFilled()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('POST', '/admin/categorie', array(), array(), array(), '{"ID":1,"name_fr":"Conferences internationales","name_en":"International conferences"}');
+        $client->request('PUT', '/admin/publications/2', array(), array(), array(),
+            '{"reference":"SR8a", "auteurs":"Se. Salva, A. Rollet", "titre":"Testabilite des services", "date": "2010-05-01", "journal": "Ingenierie des Systemes d\'Information", "volume": "Volume 131", "number": "number 13", "pages": "p. 35-70", "note": "debut", "abstract": "resume fini", "keywords": "test,services web, php", "series": "series", "localite": "Paris", "publisher": "S. Salva", "editor": "editor", "pdf": "useruploads/files/SR8a.pdf", "date_display": "May-July 2010", "categorie_id":1}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testDeletePublicationWithoutConnection()
     {
         $client = $this->createClient();
