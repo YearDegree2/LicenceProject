@@ -11,7 +11,7 @@ $app->get('/', function () use ($app) {
 
 $app->get('/login', function (Request $request) use ($app) {
     /* A Enlever mais pour l'instant je laisse pour tester avec localhost, si on veut tester phpunit, l'enlever*/
-    /*$request->headers->add(array(
+    $request->headers->add(array(
             'Content-Type' => 'fr',
         )
     );
