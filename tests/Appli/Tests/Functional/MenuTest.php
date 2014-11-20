@@ -15,6 +15,23 @@ class MenuTest extends WebTestCase
         return $app;
     }
 
+    public function testGetAllMenuWithoutMenu()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/menus', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testGetMenuAllWithoutConnection()
     {
         $client = $this->createClient();
@@ -25,7 +42,7 @@ class MenuTest extends WebTestCase
 
     public function testGetMenuAll()
     {
-        $expected = '[{"ID":"8","titre_fr":"Home","titre_en":"Home","actif":"1","position":"2"},{"ID":"9","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}]';
+        $expected = '[{"ID":"1","titre_fr":"Home","titre_en":"Home","actif":"1","position":"2"},{"ID":"2","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}]';
 
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -38,16 +55,61 @@ class MenuTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":8,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":9,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
-
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":1,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
         $client->request('GET', '/admin/menus');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($expected, $client->getResponse()->getContent());
 
-        $client->request('DELETE', '/admin/rubriques/8', array(), array(), array(), null);
-        $client->request('DELETE', '/admin/rubriques/9', array(), array(), array(), null);
+        $client->request('DELETE', '/admin/rubriques/1', array(), array(), array(), null);
+        $client->request('DELETE', '/admin/rubriques/2', array(), array(), array(), null);
+    }
 
+    public function testGetMenuByIdWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/menus/2');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriqueByNonExistingId()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/menus/1000');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetRubriquesByExistingId()
+    {
+        $expected = '{"ID":"3","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}';
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":3,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
+        $client->request('GET', '/admin/menus/3');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals($expected, $client->getResponse()->getContent());
+
+        $client->request('DELETE', '/admin/rubriques/3', array(), array(), array(), null);
     }
 
 }

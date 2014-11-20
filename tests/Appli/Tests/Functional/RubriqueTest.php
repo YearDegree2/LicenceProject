@@ -11,12 +11,6 @@ class RubriqueTest extends WebTestCase
         $app['debug'] = true;
         $app['session.test'] = true;
 
-        $sqlRequest = 'ALTER TABLE menu AUTO_INCREMENT=0';
-        $app['db']->executeUpdate($sqlRequest);
-
-        $sqlRequest = 'ALTER TABLE rubrique AUTO_INCREMENT=0';
-        $app['db']->executeUpdate($sqlRequest);
-
         return $app;
     }
 
@@ -57,6 +51,7 @@ class RubriqueTest extends WebTestCase
         '_password' => 'admin',
         ));
         $client->submit($form);
+
         $client->request('POST', '/admin/rubrique', array(), array(), array(), null);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
@@ -75,8 +70,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_en":"Home","actif":1,"position":2}');
-
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_en":"Teaching","actif":1,"position":4}');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -94,49 +88,63 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Enseignement","actif":1,"position":4}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
 
+    public function testPostRubriqueWithoutActif()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Enseignement","titre_en":"Teaching","position":4}');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testPostRubriqueWithoutID()
     {
-    $client = $this->createClient();
-    $crawler = $client->request('GET', '/admin', array(), array(), array(
-        'CONTENT_TYPE'  => 'fr'
-    ), null);
-    $buttonCrawlerNode = $crawler->selectButton('Envoyer');
-    $form = $buttonCrawlerNode->form(array(
-        '_username' => 'admin',
-        '_password' => 'admin',
-    ));
-    $client->submit($form);
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
 
-    $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"home","titre_en":"home","actif":1,"position":2}');
-
-    $this->assertEquals(200, $client->getResponse()->getStatusCode());
-    $this->assertEquals(null, $client->getResponse()->getContent());
-
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Enseignement","titre_en":"Teaching","actif":1,"position":4}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testPostRubriqueWithID()
     {
-    $client = $this->createClient();
-    $crawler = $client->request('GET', '/admin', array(), array(), array(
-        'CONTENT_TYPE'  => 'fr'
-    ), null);
-    $buttonCrawlerNode = $crawler->selectButton('Envoyer');
-    $form = $buttonCrawlerNode->form(array(
-        '_username' => 'admin',
-        '_password' => 'admin',
-    ));
-    $client->submit($form);
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
 
-    $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
-
-    $this->assertEquals(200, $client->getResponse()->getStatusCode());
-    $this->assertEquals(null, $client->getResponse()->getContent());
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":5,"titre_fr":"Outils","titre_en":"Tools","actif":1,"position":5}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testGetAllRubriquesWithoutConnection()
@@ -149,7 +157,7 @@ class RubriqueTest extends WebTestCase
 
     public function testGetAllRubriques()
     {
-        $expected = '[{"ID":"1","titre_fr":"home","titre_en":"home","actif":"1","position":"2","date_creation":"2014-11-19","date_modification":"2014-11-19","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"1"},{"ID":"2","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3","date_creation":"2014-11-19","date_modification":"2014-11-19","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"2"}]';
+        $expected = '[{"ID":"4","titre_fr":"Enseignement","titre_en":"Teaching","actif":"1","position":"4","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"4"},{"ID":"5","titre_fr":"Outils","titre_en":"Tools","actif":"1","position":"5","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"5"}]';
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -169,7 +177,7 @@ class RubriqueTest extends WebTestCase
     public function testGetRubriqueByIdWithoutConnection()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/2');
+        $client->request('GET', '/admin/rubriques/5');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
@@ -193,7 +201,7 @@ class RubriqueTest extends WebTestCase
 
     public function testGetRubriquesByExistingId()
     {
-        $expected = '{"ID":"2","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3","date_creation":"2014-11-19","date_modification":"2014-11-19","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"2"}';
+        $expected = '{"ID":"5","titre_fr":"Outils","titre_en":"Tools","actif":"1","position":"5","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"5"}';
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -205,7 +213,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/2');
+        $client->request('GET', '/admin/rubriques/5');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($expected, $client->getResponse()->getContent());
     }
@@ -213,7 +221,7 @@ class RubriqueTest extends WebTestCase
     public function testUpdateRubriqueWithoutConnection()
     {
         $client = $this->createClient();
-        $client->request('PUT', '/admin/rubriques/2');
+        $client->request('PUT', '/admin/rubriques/5');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
@@ -231,7 +239,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('PUT', '/admin/rubriques/2', array(), array(), array(), null);
+        $client->request('PUT', '/admin/rubriques/5', array(), array(), array(), null);
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -249,7 +257,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('PUT', '/admin/rubriques/1000', array(), array(), array(), '{"titre_fr":"RechercheMaJ","titre_en":"ResearchMaj","actif":1,"position":3}');
+        $client->request('PUT', '/admin/rubriques/1000', array(), array(), array(), '{"titre_fr":"OutilsMaJ","titre_en":"ToolsMaj","actif":1,"position":5}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -267,7 +275,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('PUT', '/admin/rubriques/2', array(), array(), array(), '{"titre_en":"ResearchMaj","actif":1,"position":3}');
+        $client->request('PUT', '/admin/rubriques/5', array(), array(), array(), '{"titre_en":"ToolsMaJ","actif":1,"position":5}');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -285,7 +293,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('PUT', '/admin/rubriques/2', array(), array(), array(), '{"titre_fr":"RechercheMaJ","actif":1,"position":3');
+        $client->request('PUT', '/admin/rubriques/5', array(), array(), array(), '{"titre_fr":"OutilsMaJ","actif":1,"position":5');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -303,7 +311,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('PUT', '/admin/rubriques/2', array(), array(), array(), '{"titre_fr":"RechercheMaJ2","titre_en":"ResearchMaj2"}');
+        $client->request('PUT', '/admin/rubriques/5', array(), array(), array(), '{"titre_fr":"OutilsMaJ2","titre_en":"ToolsMaJ2"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -311,7 +319,7 @@ class RubriqueTest extends WebTestCase
     public function testDeleteRubriqueWithoutConnection()
     {
         $client = $this->createClient();
-        $client->request('DELETE', '/admin/rubriques/2');
+        $client->request('DELETE', '/admin/rubriques/5');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
@@ -347,7 +355,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('DELETE', '/admin/rubriques/2', array(), array(), array(), null);
+        $client->request('DELETE', '/admin/rubriques/5', array(), array(), array(), null);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }

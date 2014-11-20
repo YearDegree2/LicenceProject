@@ -41,7 +41,7 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         return new Response(null, 404);
     }
     $rubriqueArray = json_decode($request->getContent());
-    if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'}) || !isset($rubriqueArray->{'actif'})|| !isset($rubriqueArray->{'position'})) {
+    if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'}) || !isset($rubriqueArray->{'actif'})) {
         return new Response(null, 404);
     }
     if (!isset($rubriqueArray->{'ID'})) {
@@ -49,11 +49,11 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         $app['db']->executeUpdate($sqlRequest, array(
             $rubriqueArray->{'titre_fr'},
             $rubriqueArray->{'titre_en'},
-            isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
+            $rubriqueArray->{'actif'},
             isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
             ));
 
-        $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', (SELECT max(ID) FROM menu))";
+        $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), 'Bienvenue', 'Welcome', (SELECT max(ID) FROM menu))";
         $app['db']->executeUpdate($sqlRequest);
 
         return new Response(null, 200);
@@ -67,14 +67,14 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
         ));
 
-    $sqlRequest = "INSERT INTO rubrique VALUES (null,(SELECT NOW()), (SELECT NOW()), 'Bienvenue', 'Welcome', ?)";
+    $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), 'Bienvenue', 'Welcome', ?)";
     $app['db']->executeUpdate($sqlRequest, array($rubriqueArray->{'ID'}));
 
     return new Response(null, 200);
 });
 
 $app->get("/admin/rubriques", function () use ($app) {
-    $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.id');
+    $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID');
     $results = $query->fetchAll();
     if (null == $results) {
         return new Response(null, 400);
@@ -89,7 +89,7 @@ $app->get("/admin/rubriques", function () use ($app) {
 });
 
 $app->get("/admin/rubriques/{id}", function ($id) use ($app) {
-    $req = 'SELECT * FROM menu, rubrique WHERE (rubrique.menu_id = menu.id AND menu.id = ?)';
+    $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
     if (null == $result) {
         return new Response(null, 400);
@@ -130,7 +130,7 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
 
     $app['db']->executeUpdate($sqlRequest, $values);
 
-    $sqlRequest = 'UPDATE rubrique SET date_modification = (SELECT NOW()) WHERE menu_id = ?';
+    $sqlRequest = 'UPDATE rubrique SET date_modification = NOW() WHERE menu_id = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));
 
     return new Response(null, 200);
