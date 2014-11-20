@@ -157,7 +157,6 @@ class RubriqueTest extends WebTestCase
 
     public function testGetAllRubriques()
     {
-        $expected = '[{"ID":"4","titre_fr":"Enseignement","titre_en":"Teaching","actif":"1","position":"4","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"4"},{"ID":"5","titre_fr":"Outils","titre_en":"Tools","actif":"1","position":"5","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"5"}]';
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -171,7 +170,9 @@ class RubriqueTest extends WebTestCase
 
         $client->request('GET', '/admin/rubriques');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals($expected, $client->getResponse()->getContent());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
     }
 
     public function testGetRubriqueByIdWithoutConnection()
@@ -201,7 +202,6 @@ class RubriqueTest extends WebTestCase
 
     public function testGetRubriquesByExistingId()
     {
-        $expected = '{"ID":"5","titre_fr":"Outils","titre_en":"Tools","actif":"1","position":"5","date_creation":"2014-11-20","date_modification":"2014-11-20","content_fr":"Bienvenue","content_en":"Welcome","menu_id":"5"}';
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -215,7 +215,7 @@ class RubriqueTest extends WebTestCase
 
         $client->request('GET', '/admin/rubriques/5');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals($expected, $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
     }
 
     public function testUpdateRubriqueWithoutConnection()

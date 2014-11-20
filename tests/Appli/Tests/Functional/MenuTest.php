@@ -42,8 +42,6 @@ class MenuTest extends WebTestCase
 
     public function testGetMenuAll()
     {
-        $expected = '[{"ID":"1","titre_fr":"Home","titre_en":"Home","actif":"1","position":"2"},{"ID":"2","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}]';
-
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -59,7 +57,9 @@ class MenuTest extends WebTestCase
         $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
         $client->request('GET', '/admin/menus');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals($expected, $client->getResponse()->getContent());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Home","titre_en":"Home"', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Recherche","titre_en":"Research"', $client->getResponse()->getContent());
 
         $client->request('DELETE', '/admin/rubriques/1', array(), array(), array(), null);
         $client->request('DELETE', '/admin/rubriques/2', array(), array(), array(), null);
@@ -73,7 +73,7 @@ class MenuTest extends WebTestCase
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
 
-    public function testGetRubriqueByNonExistingId()
+    public function testGetMenuByNonExistingId()
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -90,9 +90,8 @@ class MenuTest extends WebTestCase
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
     }
 
-    public function testGetRubriquesByExistingId()
+    public function testGetMenusByExistingId()
     {
-        $expected = '{"ID":"3","titre_fr":"Recherche","titre_en":"Research","actif":"1","position":"3"}';
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
@@ -107,7 +106,7 @@ class MenuTest extends WebTestCase
         $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":3,"titre_fr":"Recherche","titre_en":"Research","actif":1,"position":3}');
         $client->request('GET', '/admin/menus/3');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals($expected, $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Recherche","titre_en":"Research"', $client->getResponse()->getContent());
 
         $client->request('DELETE', '/admin/rubriques/3', array(), array(), array(), null);
     }
