@@ -73,7 +73,7 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
     return new Response(null, 200);
 });
 
-$app->get("/admin/rubriques", function () use ($app) {
+$app->get('/admin/rubriques', function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID');
     $results = $query->fetchAll();
     if (null == $results) {
@@ -88,7 +88,7 @@ $app->get("/admin/rubriques", function () use ($app) {
     return new Response($jsonMenus, 200);
 });
 
-$app->get("/admin/rubriques/{id}", function ($id) use ($app) {
+$app->get('/admin/rubriques/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
     if (null == $result) {
@@ -103,7 +103,6 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
     }
-
     $sqlRequest = 'SELECT * FROM menu WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
@@ -115,7 +114,6 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
     }
     $sqlRequest = 'UPDATE menu SET titre_fr = ?, titre_en = ?';
     $values = array($rubriqueArray->{'titre_fr'}, $rubriqueArray->{'titre_en'});
-
     if (isset($rubriqueArray->{'actif'})) {
         $sqlRequest .= ', actif = ?';
         array_push($values, $rubriqueArray->{'actif'});
@@ -124,12 +122,9 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
         $sqlRequest .= ', position = ?';
         array_push($values, $rubriqueArray->{'position'});
     }
-
     $sqlRequest .= ' WHERE ID = ?';
     array_push($values, $id);
-
     $app['db']->executeUpdate($sqlRequest, $values);
-
     $sqlRequest = 'UPDATE rubrique SET date_modification = NOW() WHERE menu_id = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));
 
@@ -142,7 +137,6 @@ $app->delete('/admin/rubriques/{id}', function ($id) use ($app) {
     if (null == $result) {
         return new Response(null, 400);
     }
-
     $sqlRequest = 'DELETE FROM rubrique WHERE menu_id = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));
     $sqlRequest = 'DELETE FROM menu WHERE ID = ?';
@@ -154,14 +148,13 @@ $app->delete('/admin/rubriques/{id}', function ($id) use ($app) {
 $app->delete('/admin/rubriques', function () use ($app) {
     $sqlRequest = 'DELETE FROM rubrique WHERE 1';
     $app['db']->executeUpdate($sqlRequest);
-
     $sqlRequest = 'DELETE FROM menu WHERE 1';
     $app['db']->executeUpdate($sqlRequest);
 
     return new Response(null, 200);
 });
 
-$app->get("/admin/menus", function () use ($app) {
+$app->get('/admin/menus', function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu ');
     $results = $query->fetchAll();
     if (null == $results) {

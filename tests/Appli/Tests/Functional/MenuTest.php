@@ -32,7 +32,7 @@ class MenuTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
-    public function testGetMenuAllWithoutConnection()
+    public function testGetAllMenuWithoutConnection()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/menus');
@@ -40,7 +40,7 @@ class MenuTest extends WebTestCase
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
 
-    public function testGetMenuAll()
+    public function testGetAllMenu()
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -76,7 +76,7 @@ class MenuTest extends WebTestCase
     public function testGetMenuByNonExistingId()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        $crawler = $client->request('GET', '/admin/menus/1000', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Envoyer');
@@ -86,8 +86,8 @@ class MenuTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/menus/1000');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testGetMenusByExistingId()

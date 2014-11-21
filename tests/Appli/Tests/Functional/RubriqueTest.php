@@ -158,7 +158,7 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriques()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        $crawler = $client->request('GET', '/admin/rubriques', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Envoyer');
@@ -168,7 +168,6 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
         $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());
@@ -186,7 +185,7 @@ class RubriqueTest extends WebTestCase
     public function testGetRubriqueByNonExistingId()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        $crawler = $client->request('GET', '/admin/rubriques/1000', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Envoyer');
@@ -196,14 +195,14 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/1000');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testGetRubriquesByExistingId()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        $crawler = $client->request('GET', '/admin/rubriques/5', array(), array(), array(
             'CONTENT_TYPE'  => 'fr'
         ), null);
         $buttonCrawlerNode = $crawler->selectButton('Envoyer');
@@ -213,7 +212,6 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/5');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
     }
