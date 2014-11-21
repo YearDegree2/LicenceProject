@@ -129,6 +129,24 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
+    public function testPostRubriqueWithoutIDWithContentFrEn()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"titre_fr":"Test with content","titre_en":"Test with content","actif":1,"content_fr":"Blabla content_fr without id", "content_en":"Blabla content_en"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testPostRubriqueWithID()
     {
         $client = $this->createClient();
@@ -143,6 +161,24 @@ class RubriqueTest extends WebTestCase
         $client->submit($form);
 
         $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":5,"titre_fr":"Outils","titre_en":"Tools","actif":1,"position":5}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testPostRubriqueWithIDAndContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"ID":6,"titre_fr":"Test id content","titre_en":"Test id content","actif":1,"position":6,"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -172,6 +208,8 @@ class RubriqueTest extends WebTestCase
         $this->assertContains('[{', $client->getResponse()->getContent());
         $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());
         $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
+        $this->assertContains('"content_fr":"Blabla content_fr without id","content_en":"Blabla content_en"', $client->getResponse()->getContent());
+        $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
     }
 
     public function testGetRubriqueByIdWithoutConnection()
@@ -214,6 +252,24 @@ class RubriqueTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesByExistingIdWithContentFrEn()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/6', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('"titre_fr":"Test id content","titre_en":"Test id content"', $client->getResponse()->getContent());
+        $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
     }
 
     public function testUpdateRubriqueWithoutConnection()
@@ -310,6 +366,24 @@ class RubriqueTest extends WebTestCase
         $client->submit($form);
 
         $client->request('PUT', '/admin/rubriques/5', array(), array(), array(), '{"titre_fr":"OutilsMaJ2","titre_en":"ToolsMaJ2"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testUpdateRubriqueWithContentFrEn()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('PUT', '/admin/rubriques/6', array(), array(), array(), '{"titre_fr":"MaJContentFr","titre_en":"MaJContentEn", "content_fr":"update content_fr", "content_en":"update content_en"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }

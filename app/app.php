@@ -51,10 +51,12 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
             $rubriqueArray->{'titre_en'},
             $rubriqueArray->{'actif'},
             isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
-            ));
-
-        $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), 'Bienvenue', 'Welcome', (SELECT max(ID) FROM menu))";
-        $app['db']->executeUpdate($sqlRequest);
+        ));
+        $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), ?, ?, (SELECT max(ID) FROM menu))";
+        $app['db']->executeUpdate($sqlRequest, array(
+            isset($rubriqueArray->{'content_fr'}) ? $rubriqueArray->{'content_fr'} : null,
+            isset($rubriqueArray->{'content_en'}) ? $rubriqueArray->{'content_en'} : null,
+        ));
 
         return new Response(null, 200);
     }
@@ -65,10 +67,13 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
         $rubriqueArray->{'titre_en'},
         isset($rubriqueArray->{'actif'}) ? $rubriqueArray->{'actif'} : 0,
         isset($rubriqueArray->{'position'}) ? $rubriqueArray->{'position'} : null,
-        ));
-
-    $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), 'Bienvenue', 'Welcome', ?)";
-    $app['db']->executeUpdate($sqlRequest, array($rubriqueArray->{'ID'}));
+    ));
+    $sqlRequest = "INSERT INTO rubrique VALUES (null, NOW(), NOW(), ?, ?, ?)";
+    $app['db']->executeUpdate($sqlRequest, array(
+        isset($rubriqueArray->{'content_fr'}) ? $rubriqueArray->{'content_fr'} : null,
+        isset($rubriqueArray->{'content_en'}) ? $rubriqueArray->{'content_en'} : null,
+        $rubriqueArray->{'ID'},
+    ));
 
     return new Response(null, 200);
 });
@@ -125,8 +130,19 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
     $sqlRequest .= ' WHERE ID = ?';
     array_push($values, $id);
     $app['db']->executeUpdate($sqlRequest, $values);
-    $sqlRequest = 'UPDATE rubrique SET date_modification = NOW() WHERE menu_id = ?';
-    $app['db']->executeUpdate($sqlRequest, array((int) $id));
+    $sqlRequest = 'UPDATE rubrique SET date_modification = NOW()';
+    $values2 = array();
+    if (isset($rubriqueArray->{'content_fr'})) {
+        $sqlRequest .= ', content_fr = ?';
+        array_push($values2, $rubriqueArray->{'content_fr'});
+    }
+    if (isset($rubriqueArray->{'content_en'})) {
+        $sqlRequest .= ', content_en = ?';
+        array_push($values2, $rubriqueArray->{'content_en'});
+    }
+    $sqlRequest .= ' WHERE menu_id = ?';
+    array_push($values2, $id);
+    $app['db']->executeUpdate($sqlRequest, $values2);
 
     return new Response(null, 200);
 });
