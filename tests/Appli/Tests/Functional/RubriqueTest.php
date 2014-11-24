@@ -31,6 +31,23 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
+    public function testCountRubriqueWithoutRubriques()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/count', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"COUNT(*)":"0"}', $client->getResponse()->getContent());
+    }
+
     public function testPostRubriqueWithoutConnection()
     {
         $client = $this->createClient();
@@ -210,6 +227,31 @@ class RubriqueTest extends WebTestCase
         $this->assertContains('"titre_fr":"Outils","titre_en":"Tools"', $client->getResponse()->getContent());
         $this->assertContains('"content_fr":"Blabla content_fr without id","content_en":"Blabla content_en"', $client->getResponse()->getContent());
         $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
+    }
+
+    public function testCountRubriqueWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/count');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testCountRubrique()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/count', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"COUNT(*)":"4"}', $client->getResponse()->getContent());
     }
 
     public function testGetRubriqueByIdWithoutConnection()
