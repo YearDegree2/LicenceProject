@@ -285,6 +285,29 @@ $app->get('/admin/publications/count', function () use ($app) {
     return new Response($countValue, 200);
 });
 
+$app->get('/admin/publications/asc', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $attributeArray = json_decode($request->getContent());
+    if (!isset($attributeArray->{'column'})) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM publication ORDER BY ' . $attributeArray->{'column'};
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $publications = array();
+    foreach ($results as $row) {
+        array_push($publications, $row);
+    }
+    $jsonPublications = json_encode($publications);
+
+    return new Response($jsonPublications, 200);
+});
+
 $app->get('/admin/publications/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
