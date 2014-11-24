@@ -35,9 +35,9 @@ class RubriqueTest extends WebTestCase
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin/rubriques/count', array(), array(), array(
-            'CONTENT_TYPE'  => 'fr'
+            'CONTENT_TYPE'  => 'en'
         ), null);
-        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
         $form = $buttonCrawlerNode->form(array(
             '_username' => 'admin',
             '_password' => 'admin',
@@ -46,6 +46,23 @@ class RubriqueTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"0"}', $client->getResponse()->getContent());
+    }
+
+    public function testGetFirstRubriqueByPositionWithoutRubrique()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/first', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
     public function testPostRubriqueWithoutConnection()
@@ -252,6 +269,31 @@ class RubriqueTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"4"}', $client->getResponse()->getContent());
+    }
+
+    public function testGetFirstRubriqueByPositionWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/first');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetFirstRubriqueByPosition()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/first', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('"titre_fr":"Test with content","titre_en":"Test with content","actif":"1"', $client->getResponse()->getContent());
     }
 
     public function testGetRubriqueByIdWithoutConnection()

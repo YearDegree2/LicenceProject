@@ -461,6 +461,22 @@ $app->get('/admin/rubriques/count', function () use ($app) {
     return new Response($countValue, 200);
 });
 
+$app->get('/admin/rubriques/first', function () use ($app) {
+    $request = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID ORDER BY menu.position';
+    $query = $app['db']->executeQuery($request);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $rubrique = array();
+    foreach ($results as $row) {
+        array_push($rubrique, $row);
+        $jsonRubrique = json_encode($rubrique);
+
+        return new Response($jsonRubrique, 200);
+    }
+});
+
 $app->get('/admin/rubriques/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
