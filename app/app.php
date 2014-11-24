@@ -445,6 +445,14 @@ $app->get('/admin/rubriques', function () use ($app) {
     return new Response($jsonMenus, 200);
 });
 
+$app->get('/admin/rubriques/count', function () use ($app) {
+    $req = 'SELECT COUNT(*) FROM rubrique';
+    $result = $app['db']->fetchAssoc($req);
+    $countValue = json_encode($result);
+
+    return new Response($countValue, 200);
+});
+
 $app->get('/admin/rubriques/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
