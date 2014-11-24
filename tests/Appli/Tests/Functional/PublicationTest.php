@@ -31,6 +31,23 @@ class PublicationTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
+    public function testCountPublicationWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/count', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"COUNT(*)":"0"}', $client->getResponse()->getContent());
+    }
+
     public function testGetPublicationsDateWithoutPublications()
     {
         $client = $this->createClient();
@@ -332,6 +349,31 @@ class PublicationTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertNotNull($client->getResponse()->getContent());
+    }
+
+    public function testCountPublicationsWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/count');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testCountPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/count', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"COUNT(*)":"4"}', $client->getResponse()->getContent());
     }
 
     public function testGetPublicationByIdWithoutConnection()

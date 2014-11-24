@@ -262,6 +262,14 @@ $app->get('/admin/publications/categorie', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
+$app->get('/admin/publications/count', function () use ($app) {
+    $req = 'SELECT COUNT(*) FROM publication';
+    $result = $app['db']->fetchAssoc($req);
+    $countValue = json_encode($result);
+
+    return new Response($countValue, 200);
+});
+
 $app->get('/admin/publications/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
