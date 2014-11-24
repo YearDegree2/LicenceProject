@@ -125,8 +125,23 @@ $app->delete('/admin/categories', function () use ($app) {
 
 // Menu
 
-$app->get("/admin/menus", function () use ($app) {
-    $query = $app['db']->executeQuery('SELECT * FROM menu ');
+$app->get('/admin/menus', function () use ($app) {
+    $query = $app['db']->executeQuery('SELECT * FROM menu');
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/menus/actif', function () use ($app) {
+    $query = $app['db']->executeQuery('SELECT * FROM menu WHERE actif = 1');
     $results = $query->fetchAll();
     if (null == $results) {
         return new Response(null, 400);
