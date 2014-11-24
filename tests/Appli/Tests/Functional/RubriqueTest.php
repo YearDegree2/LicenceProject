@@ -327,6 +327,87 @@ class RubriqueTest extends WebTestCase
         $this->assertContains('"actif":"1","position":"4"', $client->getResponse()->getContent());
     }
 
+    public function testGetAllRubriquesByTitreENWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_en":"Teaching"}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetAllRubriquesByTitreENWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetAllRubriquesByTitreENWithoutTitreEN()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_fr":"Enseignement"}');
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetAllRubriquesByTitreENWithNonExistingTitreEN()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_en":"Enseignement"}');
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetAllRubriquesByTitreENWithExistingTitreEN()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_en":"Teaching"}');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());
+        $this->assertContains('"actif":"1","position":"4"', $client->getResponse()->getContent());
+    }
+
     public function testCountRubriqueWithoutConnection()
     {
         $client = $this->createClient();
@@ -622,5 +703,4 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
-
 }
