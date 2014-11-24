@@ -272,6 +272,26 @@ class RubriqueTest extends WebTestCase
         $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
     }
 
+    public function testGetRubriquesFilter()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1","position":"6","date_creation":"2014-11-24","date_modification":null,"content_fr":"Blabla","content_en":null}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('"titre_fr":"Test id content","titre_en":"Test id content"', $client->getResponse()->getContent());
+        $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
+
+   }
+
     public function testUpdateRubriqueWithoutConnection()
     {
         $client = $this->createClient();

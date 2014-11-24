@@ -361,7 +361,6 @@ $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app
     }
     $sqlRequest .= ' WHERE ID = ?';
     array_push($values, $id);
-
     $app['db']->executeUpdate($sqlRequest, $values);
 
     return new Response(null, 200);
@@ -432,6 +431,64 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
 
 $app->get('/admin/rubriques', function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID');
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/rubriques/filter', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $rubriqueArray = json_decode($request->getContent());
+
+    // if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'}) || !isset($rubriqueArray->{'actif'} || !isset($rubriqueArray->{'position'} || !isset($rubriqueArray->{'date_creation'} || !isset($rubriqueArray->{'date_modification'} || !isset($rubriqueArray->{'content_fr'} || !isset($rubriqueArray->{'content_en'})) {
+        // return new Response(null, 404);
+    // }
+
+    $sqlRequest = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID';
+    $values = array();
+    if (null != $rubriqueArray->{'titre_fr'}) {
+        $sqlRequest .= " AND (titre_fr LIKE ?)";
+        array_push($values, '%'. $rubriqueArray->{'titre_fr'} .'%');
+    }
+    if (null != $rubriqueArray->{'titre_en'}) {
+        $sqlRequest .= ' AND (titre_en LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'titre_en'} .'%');
+    }
+    if (null != $rubriqueArray->{'actif'}) {
+        $sqlRequest .= ' AND (actif LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'actif'} .'%');
+    }
+    if (null != $rubriqueArray->{'position'}) {
+        $sqlRequest .= ' AND (position LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'position'} .'%');
+    }
+    if (null != $rubriqueArray->{'date_creation'}) {
+        $sqlRequest .= ' AND (date_creation LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'date_creation'} .'%');
+    }
+    if (null != $rubriqueArray->{'date_modification'}) {
+        $sqlRequest .= ' AND (date_modification LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'date_modification'} .'%');
+    }
+    if (null != $rubriqueArray->{'content_fr'}) {
+        $sqlRequest .= ' AND (content_fr LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'content_fr'} .'%');
+    }
+    if (null != $rubriqueArray->{'content_en'}) {
+        $sqlRequest .= ' AND (content_en LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'content_en'} .'%');
+    }
+    $query = $app['db']->executeQuery($sqlRequest, $values);
     $results = $query->fetchAll();
     if (null == $results) {
         return new Response(null, 400);
