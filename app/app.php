@@ -125,8 +125,23 @@ $app->delete('/admin/categories', function () use ($app) {
 
 // Menu
 
-$app->get("/admin/menus", function () use ($app) {
-    $query = $app['db']->executeQuery('SELECT * FROM menu ');
+$app->get('/admin/menus', function () use ($app) {
+    $query = $app['db']->executeQuery('SELECT * FROM menu');
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/menus/actif', function () use ($app) {
+    $query = $app['db']->executeQuery('SELECT * FROM menu WHERE actif = 1');
     $results = $query->fetchAll();
     if (null == $results) {
         return new Response(null, 400);
@@ -260,6 +275,14 @@ $app->get('/admin/publications/categorie', function () use ($app) {
     $jsonCategories = json_encode($categories);
 
     return new Response($jsonCategories, 200);
+});
+
+$app->get('/admin/publications/count', function () use ($app) {
+    $req = 'SELECT COUNT(*) FROM publication';
+    $result = $app['db']->fetchAssoc($req);
+    $countValue = json_encode($result);
+
+    return new Response($countValue, 200);
 });
 
 $app->get('/admin/publications/{id}', function ($id) use ($app) {
@@ -443,6 +466,74 @@ $app->get('/admin/rubriques', function () use ($app) {
     $jsonMenus = json_encode($menus);
 
     return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/rubriques/titre_fr', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $rubriqueArray = json_decode($request->getContent());
+    if (!isset($rubriqueArray->{'titre_fr'})) {
+        return new Response(null, 404);
+    }
+    $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.titre_fr = ?', array($rubriqueArray->{'titre_fr'}));
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $rubriqueArray = json_decode($request->getContent());
+    if (!isset($rubriqueArray->{'titre_en'})) {
+        return new Response(null, 404);
+    }
+    $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.titre_en = ?', array($rubriqueArray->{'titre_en'}));
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/rubriques/count', function () use ($app) {
+    $req = 'SELECT COUNT(*) FROM rubrique';
+    $result = $app['db']->fetchAssoc($req);
+    $countValue = json_encode($result);
+
+    return new Response($countValue, 200);
+});
+
+$app->get('/admin/rubriques/first', function () use ($app) {
+    $request = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID ORDER BY menu.position';
+    $query = $app['db']->executeQuery($request);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $rubrique = array();
+    foreach ($results as $row) {
+        array_push($rubrique, $row);
+        $jsonRubrique = json_encode($rubrique);
+
+        return new Response($jsonRubrique, 200);
+    }
 });
 
 $app->get('/admin/rubriques/{id}', function ($id) use ($app) {
