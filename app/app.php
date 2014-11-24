@@ -449,11 +449,9 @@ $app->get('/admin/rubriques/filter', function (Request $request) use ($app) {
         return new Response(null, 404);
     }
     $rubriqueArray = json_decode($request->getContent());
-
-    // if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'}) || !isset($rubriqueArray->{'actif'} || !isset($rubriqueArray->{'position'} || !isset($rubriqueArray->{'date_creation'} || !isset($rubriqueArray->{'date_modification'} || !isset($rubriqueArray->{'content_fr'} || !isset($rubriqueArray->{'content_en'})) {
-        // return new Response(null, 404);
-    // }
-
+    if (!array_key_exists('titre_fr', $rubriqueArray) || !array_key_exists('titre_en', $rubriqueArray) || !array_key_exists('actif', $rubriqueArray) || !array_key_exists('position', $rubriqueArray) || !array_key_exists('date_creation', $rubriqueArray) || !array_key_exists('date_modification', $rubriqueArray) || !array_key_exists('content_fr', $rubriqueArray) || !array_key_exists('content_en', $rubriqueArray) ) {
+        return new Response(null, 404);
+    }
     $sqlRequest = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID';
     $values = array();
     if (null != $rubriqueArray->{'titre_fr'}) {
