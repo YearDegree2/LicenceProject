@@ -280,7 +280,7 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
     }
 
-    public function testGetFilterRubriqueWithoutContent()
+    public function testGetFilterRubriquesWithoutContent()
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -298,7 +298,7 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
-    public function testGetFilterRubriqueWithoutTitre_fr()
+    public function testGetFilterRubriquesWithoutTitre_fr()
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -316,7 +316,7 @@ class RubriqueTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
-    public function testGetFilterRubriqueWithoutDateAndContent()
+    public function testGetFilterRubriquesWithoutOptionalFields()
     {
         $client = $this->createClient();
         $crawler = $client->request('GET', '/admin', array(), array(), array(
@@ -329,7 +329,7 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1","position":"6"}');
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1"}');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -365,10 +365,10 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1","position":"6","date_creation":"2014-11-24","date_modification":null,"content_fr":"Blabla","content_en":null}');
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1","position":"6","date_creation":null,"date_modification":null,"content_fr":"Blabla","content_en":null}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('"titre_fr":"Test id content","titre_en":"Test id content"', $client->getResponse()->getContent());
-        $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Test id content","titre_en":"Test id content","actif":"1","position":"6"', $client->getResponse()->getContent());
     }
 
     public function testUpdateRubriqueWithoutConnection()

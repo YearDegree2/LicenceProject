@@ -229,7 +229,6 @@ $app->get('/admin/publications', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
-//Filtre publications
 $app->get('/admin/publications/filter', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response(null, 404);
@@ -238,7 +237,7 @@ $app->get('/admin/publications/filter', function (Request $request) use ($app) {
     if (!array_key_exists('reference', $publicationArray) || !array_key_exists('auteurs', $publicationArray) || !array_key_exists('titre', $publicationArray) || !array_key_exists('journal', $publicationArray) || !array_key_exists('volume', $publicationArray) || !array_key_exists('number', $publicationArray) || !array_key_exists('pages', $publicationArray) || !array_key_exists('note', $publicationArray) || !array_key_exists('abstract', $publicationArray) || !array_key_exists('keywords', $publicationArray) || !array_key_exists('series', $publicationArray) || !array_key_exists('localite', $publicationArray) || !array_key_exists('publisher', $publicationArray) || !array_key_exists('editor', $publicationArray) || !array_key_exists('pdf', $publicationArray) || !array_key_exists('date_display', $publicationArray) ) {
         return new Response(null, 404);
     }
-    $sqlRequest = 'SELECT * FROM publication';
+    $sqlRequest = 'SELECT * FROM publication WHERE 1';
     $values = array();
     if (null != $publicationArray->{'reference'}) {
         $sqlRequest .= " AND (reference LIKE ?)";
