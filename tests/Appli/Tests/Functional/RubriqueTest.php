@@ -61,7 +61,25 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
 
-        $client->request('GET', '/admin/rubriques/asc', array(), array(), array(), '{"column":"titre_en "}');
+        $client->request('GET', '/admin/rubriques/asc', array(), array(), array(), '{"column":"titre_en"}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesOrderByAttributeDESCWithColumnAttributeWithoutRubriques()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/desc', array(), array(), array(), '{"column":"titre_en"}');
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
@@ -507,6 +525,67 @@ class RubriqueTest extends WebTestCase
         ));
         $client->submit($form);
         $client->request('GET', '/admin/rubriques/asc', array(), array(), array(), '{"column":"titre_en"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesOrderByAttributeDESCWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/desc');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesOrderByAttributeDESCWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/rubriques/desc', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesOrderByAttributeDESCWithoutColumnAttribute()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/desc', array(), array(), array(), '{"column2":"titre_en"}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetRubriquesOrderByAttributeDESC()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('GET', '/admin/rubriques/desc', array(), array(), array(), '{"column":"titre_en"}');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
         $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());

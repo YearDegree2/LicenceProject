@@ -589,6 +589,29 @@ $app->get('/admin/rubriques/asc', function (Request $request) use ($app) {
     return new Response($jsonRubriques, 200);
 });
 
+$app->get('/admin/rubriques/desc', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $attributeArray = json_decode($request->getContent());
+    if (!isset($attributeArray->{'column'})) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID ORDER BY ' . $attributeArray->{'column'} . ' DESC';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $rubriques = array();
+    foreach ($results as $row) {
+        array_push($rubriques, $row);
+    }
+    $jsonRubriques = json_encode($rubriques);
+
+    return new Response($jsonRubriques, 200);
+});
+
 $app->get('/admin/rubriques/first', function () use ($app) {
     $request = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID ORDER BY menu.position';
     $query = $app['db']->executeQuery($request);
