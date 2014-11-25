@@ -82,6 +82,42 @@ class PublicationTest extends WebTestCase
         $this->assertEquals(null, $client->getResponse()->getContent());
     }
 
+    public function testGetPublicationsOrderByAttributeWithColumnAttributeWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/asc', array(), array(), array(), '{"column":"auteurs"}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeDESCWithColumnAttributeWithoutPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/desc', array(), array(), array(), '{"column":"auteurs"}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
     public function testPostPublicationWithoutConnection()
     {
         $client = $this->createClient();
@@ -374,6 +410,130 @@ class PublicationTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"4"}', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/asc');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/asc', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeWithoutColumnAttribute()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/asc', array(), array(), array(), '{"column2":"auteurs"}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttribute()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('POST', '/admin/publication', array(), array(), array(), '{"reference":"SR08a", "auteurs":"A. Rollet", "titre":"Testabilite des services web", "date": "2012-05-01", "categorie_id":2}');
+        $client->request('GET', '/admin/publications/asc', array(), array(), array(), '{"column":"auteurs"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"reference":"SR08a","auteurs":"A. Rollet"', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeDESCWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/desc');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeDESCWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin/publications/desc', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeDESCWithoutColumnAttribute()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/desc', array(), array(), array(), '{"column2":"auteurs"}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetPublicationsOrderByAttributeDESC()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+        $client->request('POST', '/admin/publication', array(), array(), array(), '{"reference":"SR08a", "auteurs":"A. Rollet", "titre":"Testabilite des services web", "date": "2012-05-01", "categorie_id":2}');
+        $client->request('GET', '/admin/publications/desc', array(), array(), array(), '{"column":"auteurs"}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"reference":"SR08a","auteurs":"A. Rollet"', $client->getResponse()->getContent());
     }
 
     public function testGetPublicationByIdWithoutConnection()
