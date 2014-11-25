@@ -578,6 +578,105 @@ class PublicationTest extends WebTestCase
         $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
     }
 
+    public function testGetFilterPublicationsWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/publications/filter');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterPublicationsWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        'CONTENT_TYPE' => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+        '_username' => 'admin',
+        '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/filter', array(), array(), array(), null);
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterPublicationsWithoutReference()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/filter', array(), array(), array(), '{"auteurs":"S. Salva, A. Rollet","titre":null,"date":"2008","journal":null,"volume":null,"number":null,"pages":null,"note":"aucune note","abstract": null,"keywords":null,"series":"serie","localite":"Clermont","publisher":"ISI","editor":"myEditor","pdf":null,"date_display":null}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+     public function testGetFilterPublicationsWithoutOptionalFields()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"reference":null,"auteurs":"S. Salva, A. Rollet","titre":null,"date":"2008"}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterPublicationsNull()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/filter', array(), array(), array(), '{"reference":"impossible","auteurs":"impossible","titre":"impossible","date":"5002","journal":null,"volume":null,"number":null,"pages":null,"note":null,"abstract": null,"keywords":null,"series":null,"localite":null,"publisher":null,"editor":null,"pdf":null,"date_display":null}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterPublications()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/publications/filter', array(), array(), array(), '{"reference":null,"auteurs":"S. Salva, A. Rollet","titre":null,"date":"2008","journal":null,"volume":null,"number":null,"pages":null,"note":"aucune note","abstract": null,"keywords":null,"series":"serie","localite":"Clermont","publisher":"ISI","editor":"myEditor","pdf":null,"date_display":null}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"reference":"SR08a","auteurs":"S. Salva, A. Rollet","titre":"Testabilite des services web","date":"2008-05-01"', $client->getResponse()->getContent());
+   }
+
     public function testUpdatePublicationWithoutConnection()
     {
         $client = $this->createClient();

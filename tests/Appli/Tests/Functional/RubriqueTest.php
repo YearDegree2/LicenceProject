@@ -676,6 +676,105 @@ class RubriqueTest extends WebTestCase
         $this->assertContains('"content_fr":"Blabla content_fr and id","content_en":"Blabla content_en and id"', $client->getResponse()->getContent());
     }
 
+    public function testGetFilterRubriquesWithoutConnection()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/admin/rubriques/filter');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Language needed: French or English', $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterRubriquesWithoutContent()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+        'CONTENT_TYPE' => 'en'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Submit');
+        $form = $buttonCrawlerNode->form(array(
+        '_username' => 'admin',
+        '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), null);
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterRubriquesWithoutTitre_fr()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_en":null,"actif":"1","position":"6","date_creation":"2014-11-24","date_modification":null,"content_fr":"impossible","content_en":null}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterRubriquesWithoutOptionalFields()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1"}');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterRubriquesNull()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"impossible","titre_en":null,"actif":"1","position":"6","date_creation":"2014-11-24","date_modification":null,"content_fr":"impossible","content_en":null}');
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(null, $client->getResponse()->getContent());
+    }
+
+    public function testGetFilterRubriques()
+    {
+        $client = $this->createClient();
+        $crawler = $client->request('GET', '/admin', array(), array(), array(
+            'CONTENT_TYPE'  => 'fr'
+        ), null);
+        $buttonCrawlerNode = $crawler->selectButton('Envoyer');
+        $form = $buttonCrawlerNode->form(array(
+            '_username' => 'admin',
+            '_password' => 'admin',
+        ));
+        $client->submit($form);
+
+        $client->request('GET', '/admin/rubriques/filter', array(), array(), array(), '{"titre_fr":"test","titre_en":null,"actif":"1","position":"6","date_creation":null,"date_modification":null,"content_fr":"Blabla","content_en":null}');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('"titre_fr":"Test id content","titre_en":"Test id content","actif":"1","position":"6"', $client->getResponse()->getContent());
+    }
+
     public function testUpdateRubriqueWithoutConnection()
     {
         $client = $this->createClient();

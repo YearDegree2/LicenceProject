@@ -244,6 +244,94 @@ $app->get('/admin/publications', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
+$app->get('/admin/publications/filter', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $publicationArray = json_decode($request->getContent());
+    if (!array_key_exists('reference', $publicationArray) || !array_key_exists('auteurs', $publicationArray) || !array_key_exists('titre', $publicationArray) || !array_key_exists('journal', $publicationArray) || !array_key_exists('volume', $publicationArray) || !array_key_exists('number', $publicationArray) || !array_key_exists('pages', $publicationArray) || !array_key_exists('note', $publicationArray) || !array_key_exists('abstract', $publicationArray) || !array_key_exists('keywords', $publicationArray) || !array_key_exists('series', $publicationArray) || !array_key_exists('localite', $publicationArray) || !array_key_exists('publisher', $publicationArray) || !array_key_exists('editor', $publicationArray) || !array_key_exists('pdf', $publicationArray) || !array_key_exists('date_display', $publicationArray) ) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM publication WHERE 1';
+    $values = array();
+    if (null != $publicationArray->{'reference'}) {
+        $sqlRequest .= " AND (reference LIKE ?)";
+        array_push($values, '%'. $publicationArray->{'reference'} .'%');
+    }
+    if (null != $publicationArray->{'auteurs'}) {
+        $sqlRequest .= ' AND (auteurs LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'auteurs'} .'%');
+    }
+    if (null != $publicationArray->{'titre'}) {
+        $sqlRequest .= ' AND (titre LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'titre'} .'%');
+    }
+    if (null != $publicationArray->{'journal'}) {
+        $sqlRequest .= ' AND (journal LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'journal'} .'%');
+    }
+    if (null != $publicationArray->{'volume'}) {
+        $sqlRequest .= ' AND (volume LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'volume'} .'%');
+    }
+    if (null != $publicationArray->{'number'}) {
+        $sqlRequest .= ' AND (number LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'number'} .'%');
+    }
+    if (null != $publicationArray->{'pages'}) {
+        $sqlRequest .= ' AND (pages LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'pages'} .'%');
+    }
+    if (null != $publicationArray->{'note'}) {
+        $sqlRequest .= ' AND (note LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'note'} .'%');
+    }
+    if (null != $publicationArray->{'abstract'}) {
+        $sqlRequest .= ' AND (abstract LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'abstract'} .'%');
+    }
+    if (null != $publicationArray->{'keywords'}) {
+        $sqlRequest .= ' AND (keywords LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'keywords'} .'%');
+    }
+    if (null != $publicationArray->{'series'}) {
+        $sqlRequest .= ' AND (series LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'series'} .'%');
+    }
+    if (null != $publicationArray->{'localite'}) {
+        $sqlRequest .= ' AND (localite LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'localite'} .'%');
+    }
+    if (null != $publicationArray->{'publisher'}) {
+        $sqlRequest .= ' AND (publisher LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'publisher'} .'%');
+    }
+    if (null != $publicationArray->{'editor'}) {
+        $sqlRequest .= ' AND (editor LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'editor'} .'%');
+    }
+    if (null != $publicationArray->{'pdf'}) {
+        $sqlRequest .= ' AND (pdf LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'pdf'} .'%');
+    }
+    if (null != $publicationArray->{'date_display'}) {
+        $sqlRequest .= ' AND (date_display LIKE ?)';
+        array_push($values, '%'. $publicationArray->{'date_display'} .'%');
+    }
+    $query = $app['db']->executeQuery($sqlRequest, $values);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $publications = array();
+    foreach ($results as $publication) {
+        array_push($publications, $publication);
+    }
+    $jsonPublications = json_encode($publications);
+
+    return new Response($jsonPublications, 200);
+});
+
 // Tri de la plus recente a la plus ancienne
 $app->get('/admin/publications/date', function () use ($app) {
     $sqlRequest = 'SELECT * FROM publication ORDER BY date DESC';
@@ -430,7 +518,6 @@ $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app
     }
     $sqlRequest .= ' WHERE ID = ?';
     array_push($values, $id);
-
     $app['db']->executeUpdate($sqlRequest, $values);
 
     return new Response(null, 200);
@@ -545,6 +632,62 @@ $app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
         return new Response(null, 404);
     }
     $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.titre_en = ?', array($rubriqueArray->{'titre_en'}));
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response(null, 400);
+    }
+    $menus = array();
+    foreach ($results as $menu) {
+        array_push($menus, $menu);
+    }
+    $jsonMenus = json_encode($menus);
+
+    return new Response($jsonMenus, 200);
+});
+
+$app->get('/admin/rubriques/filter', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response(null, 404);
+    }
+    $rubriqueArray = json_decode($request->getContent());
+    if (!array_key_exists('titre_fr', $rubriqueArray) || !array_key_exists('titre_en', $rubriqueArray) || !array_key_exists('actif', $rubriqueArray) || !array_key_exists('position', $rubriqueArray) || !array_key_exists('date_creation', $rubriqueArray) || !array_key_exists('date_modification', $rubriqueArray) || !array_key_exists('content_fr', $rubriqueArray) || !array_key_exists('content_en', $rubriqueArray) ) {
+        return new Response(null, 404);
+    }
+    $sqlRequest = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID';
+    $values = array();
+    if (null != $rubriqueArray->{'titre_fr'}) {
+        $sqlRequest .= " AND (titre_fr LIKE ?)";
+        array_push($values, '%'. $rubriqueArray->{'titre_fr'} .'%');
+    }
+    if (null != $rubriqueArray->{'titre_en'}) {
+        $sqlRequest .= ' AND (titre_en LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'titre_en'} .'%');
+    }
+    if (null != $rubriqueArray->{'actif'}) {
+        $sqlRequest .= ' AND (actif LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'actif'} .'%');
+    }
+    if (null != $rubriqueArray->{'position'}) {
+        $sqlRequest .= ' AND (position LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'position'} .'%');
+    }
+    if (null != $rubriqueArray->{'date_creation'}) {
+        $sqlRequest .= ' AND (date_creation LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'date_creation'} .'%');
+    }
+    if (null != $rubriqueArray->{'date_modification'}) {
+        $sqlRequest .= ' AND (date_modification LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'date_modification'} .'%');
+    }
+    if (null != $rubriqueArray->{'content_fr'}) {
+        $sqlRequest .= ' AND (content_fr LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'content_fr'} .'%');
+    }
+    if (null != $rubriqueArray->{'content_en'}) {
+        $sqlRequest .= ' AND (content_en LIKE ?)';
+        array_push($values, '%'. $rubriqueArray->{'content_en'} .'%');
+    }
+    $query = $app['db']->executeQuery($sqlRequest, $values);
     $results = $query->fetchAll();
     if (null == $results) {
         return new Response(null, 400);
