@@ -10,7 +10,7 @@ $app->post('/login', function (Request $request) use ($app) {
         return new Response('No content', 404);
     }
     $attributes = json_decode($request->getContent());
-    if (null === $attributes->{'username'} || null === $attributes->{'password'}) {
+    if (!isset($attributes->{'username'}) || !isset($attributes->{'password'})) {
         return new Response('Attributes username or password not here', 404);
     }
     $sqlRequest = 'SELECT login, password FROM user WHERE login = ?';
