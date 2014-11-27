@@ -3,35 +3,27 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-$app->get('/', function () use ($app) {
-    return new Response(null, 200);
-});
+use Appli\PasswordEncoder;
 
-$app->get('/login', function (Request $request) use ($app) {
-    /* A Enlever mais pour l'instant je laisse pour tester avec localhost, si on veut tester phpunit, l'enlever*/
-    /*$request->headers->add(array(
-            'Content-Type' => 'fr',
-        )
-    );
-    /* Fin a enlever */
-    if ('fr' === $request->headers->get('Content-Type')) {
-        $file = 'login.fr.html.twig';
+$app->post('/login', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response('No content', 404);
     }
-    if ('en' === $request->headers->get('Content-Type')) {
-        $file = 'login.en.html.twig';
+    $attributes = json_decode($request->getContent());
+    if (null === $attributes->{'username'} || null === $attributes->{'password'}) {
+        return new Response('Attributes username or password not here', 404);
     }
-    if (isset($file)) {
-        return new Response($app['twig']->render($file, array(
-            'error' => $app['security.last_error']($request),
-            'last_username' => $app['session']->get('_security.last_username'),
-        )), 200);
+    $sqlRequest = 'SELECT login, password FROM user WHERE login = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array($attributes->{'username'}));
+    if (null == $result) {
+        return new Response('User don\'t exist', 400);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->verifyPassword($result['password'], $attributes->{'password'})) {
+        return new Response($encoder->encodePassword('Admin connected'), 200);
     }
 
-    return new Response('Language needed: French or English', 400);
-});
-
-$app->get('/admin', function () use ($app) {
-    return new Response(null, 200);
+    return new Response('Admin not connected', 400);
 });
 
 return $app;
