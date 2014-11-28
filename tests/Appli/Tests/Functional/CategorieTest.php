@@ -348,7 +348,7 @@ class CategoriesTest extends WebTestCase
     public function testDeleteCategoriesWithAAttributeFalse()
     {
         $client = $this->createClient();
-        $client->request('DELETE', '/admin/categories/1', array(), array(), array(),
+        $client->request('DELETE', '/admin/categories', array(), array(), array(),
             '{"a":"toto"}');
 
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
