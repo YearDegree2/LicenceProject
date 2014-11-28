@@ -142,7 +142,7 @@ class CategoriesTest extends WebTestCase
         $client->request('GET', '/admin/categories/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exist', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
     }
 
     /**
@@ -206,7 +206,7 @@ class CategoriesTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exist', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
     }
 
     /**
@@ -300,7 +300,7 @@ class CategoriesTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exist', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
     }
 
     /**
