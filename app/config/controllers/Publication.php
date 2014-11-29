@@ -3,64 +3,73 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Appli\PasswordEncoder;
+
 $app->post('/admin/publication', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
-        return new Response(null, 404);
+        return new Response('No content', 404);
     }
-    $categorieArray = json_decode($request->getContent());
-    if (!isset($categorieArray->{'reference'}) || !isset($categorieArray->{'auteurs'})
-        || !isset($categorieArray->{'titre'}) || !isset($categorieArray->{'date'})) {
-        return new Response(null, 404);
+    $publicationArray = json_decode($request->getContent());
+    if (!isset($publicationArray->{'a'})) {
+        return new Response('Admin not connected', 403);
     }
-    if (!isset($categorieArray->{'ID'})) {
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $publicationArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
+    if (!isset($publicationArray->{'reference'}) || !isset($publicationArray->{'auteurs'})
+        || !isset($publicationArray->{'titre'}) || !isset($publicationArray->{'date'})) {
+        return new Response('Attributes reference, auteurs, titre or date not here', 404);
+    }
+    if (!isset($publicationArray->{'ID'})) {
         $sqlRequest = 'INSERT INTO publication VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $app['db']->executeUpdate($sqlRequest, array(
-            $categorieArray->{'reference'},
-            $categorieArray->{'auteurs'},
-            $categorieArray->{'titre'},
-            $categorieArray->{'date'},
-            isset($categorieArray->{'journal'}) ? $categorieArray->{'journal'} : null,
-            isset($categorieArray->{'volume'}) ? $categorieArray->{'volume'} : null,
-            isset($categorieArray->{'number'}) ? $categorieArray->{'number'} : null,
-            isset($categorieArray->{'pages'}) ? $categorieArray->{'pages'} : null,
-            isset($categorieArray->{'note'}) ? $categorieArray->{'note'} : null,
-            isset($categorieArray->{'abstract'}) ? $categorieArray->{'abstract'} : null,
-            isset($categorieArray->{'keywords'}) ? $categorieArray->{'keywords'} : null,
-            isset($categorieArray->{'series'}) ? $categorieArray->{'series'} : null,
-            isset($categorieArray->{'localite'}) ? $categorieArray->{'localite'} : null,
-            isset($categorieArray->{'publisher'}) ? $categorieArray->{'publisher'} : null,
-            isset($categorieArray->{'editor'}) ? $categorieArray->{'editor'} : null,
-            isset($categorieArray->{'pdf'}) ? $categorieArray->{'pdf'} : null,
-            isset($categorieArray->{'date_display'}) ? $categorieArray->{'date_display'} : null,
-            isset($categorieArray->{'categorie_id'}) ? $categorieArray->{'categorie_id'} : null,
+            $publicationArray->{'reference'},
+            $publicationArray->{'auteurs'},
+            $publicationArray->{'titre'},
+            $publicationArray->{'date'},
+            isset($publicationArray->{'journal'}) ? $publicationArray->{'journal'} : null,
+            isset($publicationArray->{'volume'}) ? $publicationArray->{'volume'} : null,
+            isset($publicationArray->{'number'}) ? $publicationArray->{'number'} : null,
+            isset($publicationArray->{'pages'}) ? $publicationArray->{'pages'} : null,
+            isset($publicationArray->{'note'}) ? $publicationArray->{'note'} : null,
+            isset($publicationArray->{'abstract'}) ? $publicationArray->{'abstract'} : null,
+            isset($publicationArray->{'keywords'}) ? $publicationArray->{'keywords'} : null,
+            isset($publicationArray->{'series'}) ? $publicationArray->{'series'} : null,
+            isset($publicationArray->{'localite'}) ? $publicationArray->{'localite'} : null,
+            isset($publicationArray->{'publisher'}) ? $publicationArray->{'publisher'} : null,
+            isset($publicationArray->{'editor'}) ? $publicationArray->{'editor'} : null,
+            isset($publicationArray->{'pdf'}) ? $publicationArray->{'pdf'} : null,
+            isset($publicationArray->{'date_display'}) ? $publicationArray->{'date_display'} : null,
+            isset($publicationArray->{'categorie_id'}) ? $publicationArray->{'categorie_id'} : null,
         ));
 
-        return new Response(null, 200);
+        return new Response('Publication created', 200);
     }
     $sqlRequest = 'INSERT INTO publication VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     $app['db']->executeUpdate($sqlRequest, array(
-        $categorieArray->{'ID'},
-        $categorieArray->{'reference'},
-        $categorieArray->{'auteurs'},
-        $categorieArray->{'titre'},
-        $categorieArray->{'date'},
-        isset($categorieArray->{'journal'}) ? $categorieArray->{'journal'} : null,
-        isset($categorieArray->{'volume'}) ? $categorieArray->{'volume'} : null,
-        isset($categorieArray->{'number'}) ? $categorieArray->{'number'} : null,
-        isset($categorieArray->{'pages'}) ? $categorieArray->{'pages'} : null,
-        isset($categorieArray->{'note'}) ? $categorieArray->{'note'} : null,
-        isset($categorieArray->{'abstract'}) ? $categorieArray->{'abstract'} : null,
-        isset($categorieArray->{'keywords'}) ? $categorieArray->{'keywords'} : null,
-        isset($categorieArray->{'series'}) ? $categorieArray->{'series'} : null,
-        isset($categorieArray->{'localite'}) ? $categorieArray->{'localite'} : null,
-        isset($categorieArray->{'publisher'}) ? $categorieArray->{'publisher'} : null,
-        isset($categorieArray->{'editor'}) ? $categorieArray->{'editor'} : null,
-        isset($categorieArray->{'pdf'}) ? $categorieArray->{'pdf'} : null,
-        isset($categorieArray->{'date_display'}) ? $categorieArray->{'date_display'} : null,
-        isset($categorieArray->{'categorie_id'}) ? $categorieArray->{'categorie_id'} : null,
+        $publicationArray->{'ID'},
+        $publicationArray->{'reference'},
+        $publicationArray->{'auteurs'},
+        $publicationArray->{'titre'},
+        $publicationArray->{'date'},
+        isset($publicationArray->{'journal'}) ? $publicationArray->{'journal'} : null,
+        isset($publicationArray->{'volume'}) ? $publicationArray->{'volume'} : null,
+        isset($publicationArray->{'number'}) ? $publicationArray->{'number'} : null,
+        isset($publicationArray->{'pages'}) ? $publicationArray->{'pages'} : null,
+        isset($publicationArray->{'note'}) ? $publicationArray->{'note'} : null,
+        isset($publicationArray->{'abstract'}) ? $publicationArray->{'abstract'} : null,
+        isset($publicationArray->{'keywords'}) ? $publicationArray->{'keywords'} : null,
+        isset($publicationArray->{'series'}) ? $publicationArray->{'series'} : null,
+        isset($publicationArray->{'localite'}) ? $publicationArray->{'localite'} : null,
+        isset($publicationArray->{'publisher'}) ? $publicationArray->{'publisher'} : null,
+        isset($publicationArray->{'editor'}) ? $publicationArray->{'editor'} : null,
+        isset($publicationArray->{'pdf'}) ? $publicationArray->{'pdf'} : null,
+        isset($publicationArray->{'date_display'}) ? $publicationArray->{'date_display'} : null,
+        isset($publicationArray->{'categorie_id'}) ? $publicationArray->{'categorie_id'} : null,
     ));
 
-    return new Response(null, 200);
+    return new Response('Publication created', 200);
 });
 
 $app->get('/admin/publications', function () use ($app) {
@@ -68,24 +77,79 @@ $app->get('/admin/publications', function () use ($app) {
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
     if (null == $results) {
-        return new Response(null, 400);
+        return new Response('No publications', 400);
     }
-    $categories = array();
+    $publications = array();
     foreach ($results as $row) {
-        array_push($categories, $row);
+        array_push($publications, $row);
     }
-    $jsonCategories = json_encode($categories);
+    $jsonPublications = json_encode($publications);
 
-    return new Response($jsonCategories, 200);
+    return new Response($jsonPublications, 200);
+});
+
+// Tri de la plus recente a la plus ancienne
+$app->get('/admin/publications/date', function () use ($app) {
+    $sqlRequest = 'SELECT * FROM publication ORDER BY date DESC';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response('No publications', 400);
+    }
+    $publications = array();
+    foreach ($results as $row) {
+        array_push($publications, $row);
+    }
+    $jsonPublications = json_encode($publications);
+
+    return new Response($jsonPublications, 200);
+});
+
+$app->get('/admin/publications/categorie', function () use ($app) {
+    $sqlRequest = 'SELECT * FROM publication ORDER BY categorie_id';
+    $query = $app['db']->executeQuery($sqlRequest);
+    $results = $query->fetchAll();
+    if (null == $results) {
+        return new Response('No publications', 400);
+    }
+    $publications = array();
+    foreach ($results as $row) {
+        array_push($publications, $row);
+    }
+    $jsonPublications = json_encode($publications);
+
+    return new Response($jsonPublications, 200);
+});
+
+$app->get('/admin/publications/count', function () use ($app) {
+    $req = 'SELECT COUNT(*) FROM publication';
+    $result = $app['db']->fetchAssoc($req);
+    $countValue = json_encode($result);
+
+    return new Response($countValue, 200);
 });
 
 $app->get('/admin/publications/filter', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
-        return new Response(null, 404);
+        return new Response('No content', 404);
     }
     $publicationArray = json_decode($request->getContent());
-    if (!array_key_exists('reference', $publicationArray) || !array_key_exists('auteurs', $publicationArray) || !array_key_exists('titre', $publicationArray) || !array_key_exists('journal', $publicationArray) || !array_key_exists('volume', $publicationArray) || !array_key_exists('number', $publicationArray) || !array_key_exists('pages', $publicationArray) || !array_key_exists('note', $publicationArray) || !array_key_exists('abstract', $publicationArray) || !array_key_exists('keywords', $publicationArray) || !array_key_exists('series', $publicationArray) || !array_key_exists('localite', $publicationArray) || !array_key_exists('publisher', $publicationArray) || !array_key_exists('editor', $publicationArray) || !array_key_exists('pdf', $publicationArray) || !array_key_exists('date_display', $publicationArray) ) {
-        return new Response(null, 404);
+    if (!isset($publicationArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $publicationArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
+    if (!array_key_exists('reference', $publicationArray) || !array_key_exists('auteurs', $publicationArray)
+        || !array_key_exists('titre', $publicationArray) || !array_key_exists('journal', $publicationArray)
+        || !array_key_exists('volume', $publicationArray) || !array_key_exists('number', $publicationArray)
+        || !array_key_exists('pages', $publicationArray) || !array_key_exists('note', $publicationArray)
+        || !array_key_exists('abstract', $publicationArray) || !array_key_exists('keywords', $publicationArray)
+        || !array_key_exists('series', $publicationArray) || !array_key_exists('localite', $publicationArray)
+        || !array_key_exists('publisher', $publicationArray) || !array_key_exists('editor', $publicationArray)
+        || !array_key_exists('pdf', $publicationArray) || !array_key_exists('date_display', $publicationArray) ) {
+        return new Response('Some attributes are missing', 404);
     }
     $sqlRequest = 'SELECT * FROM publication WHERE 1';
     $values = array();
@@ -156,7 +220,7 @@ $app->get('/admin/publications/filter', function (Request $request) use ($app) {
     $query = $app['db']->executeQuery($sqlRequest, $values);
     $results = $query->fetchAll();
     if (null == $results) {
-        return new Response(null, 400);
+        return new Response('No publications', 400);
     }
     $publications = array();
     foreach ($results as $publication) {
@@ -167,60 +231,26 @@ $app->get('/admin/publications/filter', function (Request $request) use ($app) {
     return new Response($jsonPublications, 200);
 });
 
-// Tri de la plus recente a la plus ancienne
-$app->get('/admin/publications/date', function () use ($app) {
-    $sqlRequest = 'SELECT * FROM publication ORDER BY date DESC';
-    $query = $app['db']->executeQuery($sqlRequest);
-    $results = $query->fetchAll();
-    if (null == $results) {
-        return new Response(null, 400);
-    }
-    $categories = array();
-    foreach ($results as $row) {
-        array_push($categories, $row);
-    }
-    $jsonCategories = json_encode($categories);
-
-    return new Response($jsonCategories, 200);
-});
-
-$app->get('/admin/publications/categorie', function () use ($app) {
-    $sqlRequest = 'SELECT * FROM publication ORDER BY categorie_id';
-    $query = $app['db']->executeQuery($sqlRequest);
-    $results = $query->fetchAll();
-    if (null == $results) {
-        return new Response(null, 400);
-    }
-    $categories = array();
-    foreach ($results as $row) {
-        array_push($categories, $row);
-    }
-    $jsonCategories = json_encode($categories);
-
-    return new Response($jsonCategories, 200);
-});
-
-$app->get('/admin/publications/count', function () use ($app) {
-    $req = 'SELECT COUNT(*) FROM publication';
-    $result = $app['db']->fetchAssoc($req);
-    $countValue = json_encode($result);
-
-    return new Response($countValue, 200);
-});
-
 $app->get('/admin/publications/asc', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
-        return new Response(null, 404);
+        return new Response('No content', 404);
     }
     $attributeArray = json_decode($request->getContent());
+    if (!isset($attributeArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $attributeArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
     if (!isset($attributeArray->{'column'})) {
-        return new Response(null, 404);
+        return new Response('Attribute column not here', 404);
     }
     $sqlRequest = 'SELECT * FROM publication ORDER BY ' . $attributeArray->{'column'};
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
     if (null == $results) {
-        return new Response(null, 400);
+        return new Response('No publications', 400);
     }
     $publications = array();
     foreach ($results as $row) {
@@ -233,17 +263,24 @@ $app->get('/admin/publications/asc', function (Request $request) use ($app) {
 
 $app->get('/admin/publications/desc', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
-        return new Response(null, 404);
+        return new Response('No content', 404);
     }
     $attributeArray = json_decode($request->getContent());
+    if (!isset($attributeArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $attributeArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
     if (!isset($attributeArray->{'column'})) {
-        return new Response(null, 404);
+        return new Response('Attribute column not here', 404);
     }
     $sqlRequest = 'SELECT * FROM publication ORDER BY ' . $attributeArray->{'column'} . ' DESC';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
     if (null == $results) {
-        return new Response(null, 400);
+        return new Response('No publications', 400);
     }
     $publications = array();
     foreach ($results as $row) {
@@ -254,34 +291,51 @@ $app->get('/admin/publications/desc', function (Request $request) use ($app) {
     return new Response($jsonPublications, 200);
 });
 
-$app->get('/admin/publications/{id}', function ($id) use ($app) {
+$app->get('/admin/publications/{id}', function (Request $request, $id) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response('No content', 404);
+    }
+    $attributeArray = json_decode($request->getContent());
+    if (!isset($attributeArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $attributeArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response(null, 400);
+        return new Response('Publication don\'t exists', 400);
     }
-    $jsonCategorie = json_encode($result);
+    $jsonPublications = json_encode($result);
 
-    return new Response($jsonCategorie, 200);
+    return new Response($jsonPublications, 200);
 });
 
 $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app) {
     if (null == $request->getContent()) {
-        return new Response(null, 404);
+        return new Response('No content', 404);
+    }
+    $publicationArray = json_decode($request->getContent());
+    if (!isset($publicationArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $publicationArray->{'a'}) {
+        return new Response('Admin not connected', 403);
     }
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response(null, 400);
+        return new Response('Publication don\'t exists', 400);
     }
     $categorieArray = json_decode($request->getContent());
     if (!isset($categorieArray->{'reference'})) {
-        return new Response(null, 400);
+        return new Response('Attribute reference not here', 404);
     }
-
     $sqlRequest = 'UPDATE publication SET reference = ?';
     $values = array($categorieArray->{'reference'});
-
     if (isset($categorieArray->{'auteurs'})) {
         $sqlRequest .= ', auteurs = ?';
         array_push($values, $categorieArray->{'auteurs'});
@@ -354,26 +408,48 @@ $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app
     array_push($values, $id);
     $app['db']->executeUpdate($sqlRequest, $values);
 
-    return new Response(null, 200);
+    return new Response('Publication updated', 200);
 });
 
-$app->delete('/admin/publications/{id}', function ($id) use ($app) {
+$app->delete('/admin/publications/{id}', function (Request $request, $id) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response('No content', 404);
+    }
+    $publicationArray = json_decode($request->getContent());
+    if (!isset($publicationArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $publicationArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response(null, 400);
+        return new Response('Publication don\'t exists', 400);
     }
     $sqlRequest = 'DELETE FROM publication WHERE ID = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));
 
-    return new Response(null, 200);
+    return new Response('Publication deleted', 200);
 });
 
-$app->delete('/admin/publications', function () use ($app) {
+$app->delete('/admin/publications', function (Request $request) use ($app) {
+    if (null == $request->getContent()) {
+        return new Response('No content', 404);
+    }
+    $publicationArray = json_decode($request->getContent());
+    if (!isset($publicationArray->{'a'})) {
+        return new Response('Admin not connected', 403);
+    }
+    $encoder = new PasswordEncoder();
+    if ($encoder->encodePassword('Admin connected') !== $publicationArray->{'a'}) {
+        return new Response('Admin not connected', 403);
+    }
     $sqlRequest = 'DELETE FROM publication WHERE 1';
     $app['db']->executeUpdate($sqlRequest);
 
-    return new Response(null, 200);
+    return new Response('Publications deleted', 200);
 });
 
 return $app;

@@ -11,7 +11,6 @@ class MenuTest extends WebTestCase
     {
         $app = require __DIR__ . '/../../../../app/app.php';
         $app['debug'] = true;
-        $app['session.test'] = true;
 
         return $app;
     }
