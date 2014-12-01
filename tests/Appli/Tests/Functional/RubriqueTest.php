@@ -1,4 +1,5 @@
 <?php
+
 namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
@@ -59,6 +60,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('GET', '/admin/rubriques/asc', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","column":"titre_en"}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
     }
@@ -72,6 +74,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('GET', '/admin/rubriques/desc', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","column":"titre_en"}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
     }
@@ -159,7 +162,7 @@ class RubriqueTest extends WebTestCase
     /**
      * Test POST /rubrique sans l'attribut ID.
      */
-    public function testPostRubriqueWithoutID()
+    public function testPostRubriqueWithoutId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -173,7 +176,7 @@ class RubriqueTest extends WebTestCase
     /**
      * Test POST /rubrique avec l'attribut ID.
      */
-    public function testPostRubriqueWithID()
+    public function testPostRubriqueWithId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -322,19 +325,19 @@ class RubriqueTest extends WebTestCase
     /**
      * Test GET /rubriques/id avec un id inexistant.
      */
-    public function testGetRubriqueByIDWithoutExistingId()
+    public function testGetRubriqueByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/rubriques/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Rubrique don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Rubrique doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test GET /rubriques/id avec un id existant.
      */
-    public function testGetRubriqueByIDWithExistingId()
+    public function testGetRubriqueByIdWithExistingId()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/rubriques/1');
@@ -390,6 +393,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('GET', '/admin/rubriques/filter', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","titre_en":null,"actif":"1","position":"6","date_creation":"2014-11-24","date_modification":null,"content_fr":"impossible","content_en":null}');
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Some attributes are missing', $client->getResponse()->getContent());
     }
@@ -604,8 +608,9 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/rubriques/1000', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","titre_fr":"OutilsMaJ","titre_en":"ToolsMaj","actif":1,"position":5}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Menu don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Menu doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
@@ -617,6 +622,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/rubriques/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","titre_en":"ToolsMaj","actif":1,"position":5}');
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Attributes titre_fr or titre_en not here', $client->getResponse()->getContent());
     }
@@ -630,6 +636,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/rubriques/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","titre_fr":"OutilsMaJ","actif":1,"position":5}');
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Attributes titre_fr or titre_en not here', $client->getResponse()->getContent());
     }
@@ -657,6 +664,7 @@ class RubriqueTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/rubriques/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","titre_fr":"MaJContentFr","titre_en":"MaJContentEn", "content_fr":"update content_fr", "content_en":"update content_en"}');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('Rubrique updated', $client->getResponse()->getContent());
     }
@@ -702,7 +710,7 @@ class RubriqueTest extends WebTestCase
     /**
      * Test DELETE /rubriques/id avec un ID inexistant.
      */
-    public function testDeleteRubriqueByIdWithoutExistingID()
+    public function testDeleteRubriqueByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -710,13 +718,13 @@ class RubriqueTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Menu don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Menu doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test DELETE /rubriques/id avec un ID existant.
      */
-    public function testDeleteRubriqueByIdWithExistingID()
+    public function testDeleteRubriqueByIdWithExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();

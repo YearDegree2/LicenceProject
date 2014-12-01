@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Appli\PasswordEncoder;
 
 $app->post('/login', function (Request $request) use ($app) {

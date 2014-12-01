@@ -1,4 +1,5 @@
 <?php
+
 namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
@@ -95,7 +96,7 @@ class CategoriesTest extends WebTestCase
     /**
      * Test POST /categorie sans l'attribut ID.
      */
-    public function testPostCategorieWithoutID()
+    public function testPostCategorieWithoutId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -109,7 +110,7 @@ class CategoriesTest extends WebTestCase
     /**
      * Test POST /categorie avec l'attribut ID.
      */
-    public function testPostCategorieWithID()
+    public function testPostCategorieWithId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -136,19 +137,19 @@ class CategoriesTest extends WebTestCase
     /**
      * Test GET /categories/id avec un ID inexistant.
      */
-    public function testGetCategorieByIDWithoutExistingID()
+    public function testGetCategorieByIDWithoutExistingId()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/categories/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test GET /categories/id avec un ID existant.
      */
-    public function testGetCategorieByIDWithExistingID()
+    public function testGetCategorieByIdWithExistingId()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/categories/1');
@@ -198,7 +199,7 @@ class CategoriesTest extends WebTestCase
     /**
      * Test PUT /categories/id avec un ID inexistant.
      */
-    public function testPutCategorieByIdWithoutExistingID()
+    public function testPutCategorieByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -206,7 +207,7 @@ class CategoriesTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
@@ -292,7 +293,7 @@ class CategoriesTest extends WebTestCase
     /**
      * Test DELETE /categories/id avec un ID inexistant.
      */
-    public function testDeleteCategorieByIdWithoutExistingID()
+    public function testDeleteCategorieByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -300,13 +301,13 @@ class CategoriesTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Categorie don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Categorie doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test DELETE /categories/id avec un ID existant.
      */
-    public function testDeleteCategorieByIdWithExistingID()
+    public function testDeleteCategorieByIdWithExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();

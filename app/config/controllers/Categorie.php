@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Appli\PasswordEncoder;
 
 $app->post('/admin/categorie', function (Request $request) use ($app) {
@@ -52,7 +51,7 @@ $app->get('/admin/categories/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Categorie don\'t exists', 400);
+        return new Response('Categorie doesn\'t exist', 400);
     }
     $jsonCategorie = json_encode($result);
 
@@ -74,7 +73,7 @@ $app->put('/admin/categories/{id}', function (Request $request, $id) use ($app) 
     $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Categorie don\'t exists', 400);
+        return new Response('Categorie doesn\'t exist', 400);
     }
     if (!isset($categorieArray->{'name_fr'}) || !isset($categorieArray->{'name_en'})) {
         return new Response('Attributes name_fr or name_en not here', 404);
@@ -100,7 +99,7 @@ $app->delete('/admin/categories/{id}', function (Request $request, $id) use ($ap
     $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Categorie don\'t exists', 400);
+        return new Response('Categorie doesn\'t exist', 400);
     }
     $sqlRequest = 'DELETE FROM categorie WHERE ID = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));

@@ -36,7 +36,7 @@ $app->get('/admin/menus/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu WHERE ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
     if (null == $result) {
-        return new Response('Menu don\'t exists', 400);
+        return new Response('Menu doesn\'t exist', 400);
     }
     $jsonMenu = json_encode($result);
 

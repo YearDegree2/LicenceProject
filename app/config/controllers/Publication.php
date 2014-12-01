@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Appli\PasswordEncoder;
 
 $app->post('/admin/publication', function (Request $request) use ($app) {
@@ -306,7 +305,7 @@ $app->get('/admin/publications/{id}', function (Request $request, $id) use ($app
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Publication don\'t exists', 400);
+        return new Response('Publication doesn\'t exist', 400);
     }
     $jsonPublications = json_encode($result);
 
@@ -328,7 +327,7 @@ $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Publication don\'t exists', 400);
+        return new Response('Publication doesn\'t exist', 400);
     }
     $categorieArray = json_decode($request->getContent());
     if (!isset($categorieArray->{'reference'})) {
@@ -426,7 +425,7 @@ $app->delete('/admin/publications/{id}', function (Request $request, $id) use ($
     $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Publication don\'t exists', 400);
+        return new Response('Publication doesn\'t exist', 400);
     }
     $sqlRequest = 'DELETE FROM publication WHERE ID = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));

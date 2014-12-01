@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Appli\PasswordEncoder;
 
 $app->post('/admin/rubrique', function (Request $request) use ($app) {
@@ -60,13 +59,13 @@ $app->get('/admin/rubriques', function () use ($app) {
     if (null == $results) {
         return new Response('No rubriques', 400);
     }
-    $menus = array();
+    $rubriques = array();
     foreach ($results as $menu) {
-        array_push($menus, $menu);
+        array_push($rubriques, $menu);
     }
-    $jsonMenus = json_encode($menus);
+    $jsonRubriques = json_encode($rubriques);
 
-    return new Response($jsonMenus, 200);
+    return new Response($jsonRubriques, 200);
 });
 
 $app->get('/admin/rubriques/titre_fr', function (Request $request) use ($app) {
@@ -83,13 +82,13 @@ $app->get('/admin/rubriques/titre_fr', function (Request $request) use ($app) {
     if (null == $results) {
         return new Response('No rubriques', 400);
     }
-    $menus = array();
+    $rubriques = array();
     foreach ($results as $menu) {
-        array_push($menus, $menu);
+        array_push($rubriques, $menu);
     }
-    $jsonMenus = json_encode($menus);
+    $jsonRubriques = json_encode($rubriques);
 
-    return new Response($jsonMenus, 200);
+    return new Response($jsonRubriques, 200);
 });
 
 $app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
@@ -105,13 +104,13 @@ $app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
     if (null == $results) {
         return new Response('No rubriques', 400);
     }
-    $menus = array();
+    $rubriques = array();
     foreach ($results as $menu) {
-        array_push($menus, $menu);
+        array_push($rubriques, $menu);
     }
-    $jsonMenus = json_encode($menus);
+    $jsonRubriques = json_encode($rubriques);
 
-    return new Response($jsonMenus, 200);
+    return new Response($jsonRubriques, 200);
 });
 
 $app->get('/admin/rubriques/count', function () use ($app) {
@@ -195,13 +194,13 @@ $app->get('/admin/rubriques/filter', function (Request $request) use ($app) {
     if (null == $results) {
         return new Response('No rubriques', 400);
     }
-    $menus = array();
+    $rubriques = array();
     foreach ($results as $menu) {
-        array_push($menus, $menu);
+        array_push($rubriques, $menu);
     }
-    $jsonMenus = json_encode($menus);
+    $jsonRubriques = json_encode($rubriques);
 
-    return new Response($jsonMenus, 200);
+    return new Response($jsonRubriques, 200);
 });
 
 $app->get('/admin/rubriques/asc', function (Request $request) use ($app) {
@@ -268,11 +267,11 @@ $app->get('/admin/rubriques/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
     if (null == $result) {
-        return new Response('Rubrique don\'t exists', 400);
+        return new Response('Rubrique doesn\'t exist', 400);
     }
-    $jsonMenu = json_encode($result);
+    $jsonRubrique = json_encode($result);
 
-    return new Response($jsonMenu, 200);
+    return new Response($jsonRubrique, 200);
 });
 
 $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
@@ -290,7 +289,7 @@ $app->put('/admin/rubriques/{id}', function (Request $request, $id) use ($app) {
     $sqlRequest = 'SELECT * FROM menu WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Menu don\'t exists', 400);
+        return new Response('Menu doesn\'t exist', 400);
     }
     if (!isset($rubriqueArray->{'titre_fr'}) || !isset($rubriqueArray->{'titre_en'})) {
         return new Response('Attributes titre_fr or titre_en not here', 404);
@@ -340,7 +339,7 @@ $app->delete('/admin/rubriques/{id}', function (Request $request, $id) use ($app
     $sqlRequest = 'SELECT * FROM menu WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {
-        return new Response('Menu don\'t exists', 400);
+        return new Response('Menu doesn\'t exist', 400);
     }
     $sqlRequest = 'DELETE FROM rubrique WHERE menu_id = ?';
     $app['db']->executeUpdate($sqlRequest, array((int) $id));

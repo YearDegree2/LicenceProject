@@ -1,4 +1,5 @@
 <?php
+
 namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
@@ -79,6 +80,7 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('GET', '/admin/publications/asc', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","column":"auteurs"}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No publications', $client->getResponse()->getContent());
     }
@@ -92,6 +94,7 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('GET', '/admin/publications/desc', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","column":"auteurs"}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No publications', $client->getResponse()->getContent());
     }
@@ -193,7 +196,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test POST /publication sans l'attribut ID.
      */
-    public function testPostPublicationWithoutID()
+    public function testPostPublicationWithoutId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -207,7 +210,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test POST /publication avec l'attribut ID.
      */
-    public function testPostPublicationWithID()
+    public function testPostPublicationWithId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -221,7 +224,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test POST /publication avec l'attribut categorie_id correspondant a une categorie inexistante.
      */
-    public function testPostPublicationWithNonExistingCategorieID()
+    public function testPostPublicationWithNonExistingCategorieId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -234,7 +237,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test POST /publication avec l'attribut categorie_id correspondant a une categorie existante, tous les champs remplis.
      */
-    public function testPostPublicationWithExistingCategorieIDAllFieldsFilled()
+    public function testPostPublicationWithExistingCategorieIdAllFieldsFilled()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -273,7 +276,8 @@ class PublicationTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertNotNull($client->getResponse()->getContent());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
     }
 
     /**
@@ -287,7 +291,8 @@ class PublicationTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertNotNull($client->getResponse()->getContent());
+        $this->assertContains('[{', $client->getResponse()->getContent());
+        $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
     }
 
     /**
@@ -574,7 +579,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test GET /publications/id avec un id inexistant.
      */
-    public function testGetPublicationByIDWithoutExistingId()
+    public function testGetPublicationByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -582,13 +587,13 @@ class PublicationTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Publication don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Publication doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test GET /publications/id avec un id existant.
      */
-    public function testGetPublicationByIDWithExistingId()
+    public function testGetPublicationByIdWithExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -646,6 +651,7 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/publications/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","auteurs":"S. Salva, A. Rollet", "titre":"Testabilite des services web"}');
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Attribute reference not here', $client->getResponse()->getContent());
     }
@@ -659,8 +665,9 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/publications/1000', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","reference":"SR08a", "auteurs":"S. Salva, A. Rollet", "titre":"Testabilite des services web", "date": "2008-05-01", "categorie_id":2}');
+
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Publication don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Publication doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
@@ -672,6 +679,7 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/publications/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","reference":"SR8a", "titre":"Testabilite des services", "date": "2010-05-01"}');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('Publication updated', $client->getResponse()->getContent());
     }
@@ -685,6 +693,7 @@ class PublicationTest extends WebTestCase
         $encoder = new PasswordEncoder();
         $client->request('PUT', '/admin/publications/1', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') . '","reference":"SR8a", "auteurs":"Se. Salva, A. Rollet", "titre":"Testabilite des services", "date": "2010-05-01", "journal": "Ingenierie des Systemes d\'Information", "volume": "Volume 131", "number": "number 13", "pages": "p. 35-70", "note": "debut", "abstract": "resume fini", "keywords": "test,services web, php", "series": "series", "localite": "Paris", "publisher": "S. Salva", "editor": "editor", "pdf": "useruploads/files/SR8a.pdf", "date_display": "May-July 2010", "categorie_id":1}');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('Publication updated', $client->getResponse()->getContent());
     }
@@ -738,7 +747,7 @@ class PublicationTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Publication don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Publication doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**

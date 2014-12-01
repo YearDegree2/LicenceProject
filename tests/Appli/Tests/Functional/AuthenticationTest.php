@@ -1,4 +1,5 @@
 <?php
+
 namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
@@ -53,7 +54,7 @@ class AuthenticationTest extends WebTestCase
     }
 
     /**
-     * Test page login avec un username non existant.
+     * Test page login avec un username inexistant.
      */
     public function testLoginPageWithNonExistingUser()
     {

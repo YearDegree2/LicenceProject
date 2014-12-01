@@ -1,4 +1,5 @@
 <?php
+
 namespace Appli\Tests\Functional;
 
 use Silex\WebTestCase;
@@ -33,7 +34,7 @@ class MenuTest extends WebTestCase
     public function testGetAllMenusActifWithoutMenusActif()
     {
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/admin/menus/actif');
+        $client->request('GET', '/admin/menus/actif');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No menus', $client->getResponse()->getContent());
@@ -46,8 +47,10 @@ class MenuTest extends WebTestCase
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":1,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
-        $client->request('POST', '/admin/rubrique', array(), array(), array(), '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":0,"position":3}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(),
+            '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":1,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
+        $client->request('POST', '/admin/rubrique', array(), array(), array(),
+            '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":0,"position":3}');
         $client->request('GET', '/admin/menus');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -63,6 +66,7 @@ class MenuTest extends WebTestCase
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/menus/actif');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
         $this->assertContains('"titre_fr":"Home","titre_en":"Home"', $client->getResponse()->getContent());
@@ -72,19 +76,19 @@ class MenuTest extends WebTestCase
     /**
      * Test GET /menus/id avec un id inexistant.
      */
-    public function testGetMenuByIDWithoutExistingID()
+    public function testGetMenuByIdWithoutExistingId()
     {
         $client = $this->createClient();
         $client->request('GET', '/admin/menus/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Menu don\'t exists', $client->getResponse()->getContent());
+        $this->assertEquals('Menu doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
      * Test GET /menus/id avec un id existant
      */
-    public function testGetMenuByIDWithExistingID()
+    public function testGetMenuByIdWithExistingId()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -96,5 +100,4 @@ class MenuTest extends WebTestCase
         $client->request('DELETE', '/admin/rubriques/1', array(), array(), array(), '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
         $client->request('DELETE', '/admin/rubriques/2', array(), array(), array(), '{"a":"' . $encoder->encodePassword('Admin connected') .'"}');
     }
-
 }
