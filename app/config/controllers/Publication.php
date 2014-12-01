@@ -71,7 +71,7 @@ $app->post('/admin/publication', function (Request $request) use ($app) {
     return new Response('Publication created', 200);
 });
 
-$app->get('/admin/publications', function () use ($app) {
+$app->get('/publications', function () use ($app) {
     $sqlRequest = 'SELECT * FROM publication';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
@@ -88,7 +88,7 @@ $app->get('/admin/publications', function () use ($app) {
 });
 
 // Tri de la plus recente a la plus ancienne
-$app->get('/admin/publications/date', function () use ($app) {
+$app->get('/publications/date', function () use ($app) {
     $sqlRequest = 'SELECT * FROM publication ORDER BY date DESC';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
@@ -104,7 +104,7 @@ $app->get('/admin/publications/date', function () use ($app) {
     return new Response($jsonPublications, 200);
 });
 
-$app->get('/admin/publications/categorie', function () use ($app) {
+$app->get('/publications/categorie', function () use ($app) {
     $sqlRequest = 'SELECT * FROM publication ORDER BY categorie_id';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
@@ -120,7 +120,7 @@ $app->get('/admin/publications/categorie', function () use ($app) {
     return new Response($jsonPublications, 200);
 });
 
-$app->get('/admin/publications/count', function () use ($app) {
+$app->get('/publications/count', function () use ($app) {
     $req = 'SELECT COUNT(*) FROM publication';
     $result = $app['db']->fetchAssoc($req);
     $countValue = json_encode($result);

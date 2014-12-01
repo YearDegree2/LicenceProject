@@ -22,7 +22,7 @@ class MenuTest extends WebTestCase
     public function testGetAllMenusWithoutMenus()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/menus');
+        $client->request('GET', '/menus');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No menus', $client->getResponse()->getContent());
@@ -34,7 +34,7 @@ class MenuTest extends WebTestCase
     public function testGetAllMenusActifWithoutMenusActif()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/menus/actif');
+        $client->request('GET', '/menus/actif');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No menus', $client->getResponse()->getContent());
@@ -51,7 +51,7 @@ class MenuTest extends WebTestCase
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":1,"titre_fr":"Home","titre_en":"Home","actif":1,"position":2}');
         $client->request('POST', '/admin/rubrique', array(), array(), array(),
             '{"a":"' . $encoder->encodePassword('Admin connected') .'","ID":2,"titre_fr":"Recherche","titre_en":"Research","actif":0,"position":3}');
-        $client->request('GET', '/admin/menus');
+        $client->request('GET', '/menus');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -65,7 +65,7 @@ class MenuTest extends WebTestCase
     public function testGetAllMenusActif()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/menus/actif');
+        $client->request('GET', '/menus/actif');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -79,7 +79,7 @@ class MenuTest extends WebTestCase
     public function testGetMenuByIdWithoutExistingId()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/menus/1000');
+        $client->request('GET', '/menus/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Menu doesn\'t exist', $client->getResponse()->getContent());
@@ -92,7 +92,7 @@ class MenuTest extends WebTestCase
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/menus/1');
+        $client->request('GET', '/menus/1');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"ID":"1","titre_fr":"Home","titre_en":"Home","actif":"1","position":"2"}', $client->getResponse()->getContent());

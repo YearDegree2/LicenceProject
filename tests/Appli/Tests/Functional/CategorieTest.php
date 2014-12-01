@@ -21,7 +21,7 @@ class CategoriesTest extends WebTestCase
     public function testGetAllCategoriesWithoutCategories()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/categories');
+        $client->request('GET', '/categories');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No categories', $client->getResponse()->getContent());
@@ -127,7 +127,7 @@ class CategoriesTest extends WebTestCase
     public function testGetAllCategories()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/categories');
+        $client->request('GET', '/categories');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -140,7 +140,7 @@ class CategoriesTest extends WebTestCase
     public function testGetCategorieByIDWithoutExistingId()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/categories/1000');
+        $client->request('GET', '/categories/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Categorie doesn\'t exist', $client->getResponse()->getContent());
@@ -152,7 +152,7 @@ class CategoriesTest extends WebTestCase
     public function testGetCategorieByIdWithExistingId()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/categories/1');
+        $client->request('GET', '/categories/1');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"ID":"1","name_fr":"Conferences nationales et internationales","name_en":"International and national conferences"}', $client->getResponse()->getContent());

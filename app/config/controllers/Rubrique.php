@@ -53,7 +53,7 @@ $app->post('/admin/rubrique', function (Request $request) use ($app) {
     return new Response('Rubrique created', 200);
 });
 
-$app->get('/admin/rubriques', function () use ($app) {
+$app->get('/rubriques', function () use ($app) {
     $query = $app['db']->executeQuery('SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID');
     $results = $query->fetchAll();
     if (null == $results) {
@@ -68,7 +68,7 @@ $app->get('/admin/rubriques', function () use ($app) {
     return new Response($jsonRubriques, 200);
 });
 
-$app->get('/admin/rubriques/titre_fr', function (Request $request) use ($app) {
+$app->get('/rubriques/titre_fr', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response('No content', 404);
     }
@@ -91,7 +91,7 @@ $app->get('/admin/rubriques/titre_fr', function (Request $request) use ($app) {
     return new Response($jsonRubriques, 200);
 });
 
-$app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
+$app->get('/rubriques/titre_en', function (Request $request) use ($app) {
     if (null == $request->getContent()) {
         return new Response('No content', 404);
     }
@@ -113,7 +113,7 @@ $app->get('/admin/rubriques/titre_en', function (Request $request) use ($app) {
     return new Response($jsonRubriques, 200);
 });
 
-$app->get('/admin/rubriques/count', function () use ($app) {
+$app->get('/rubriques/count', function () use ($app) {
     $req = 'SELECT COUNT(*) FROM rubrique';
     $result = $app['db']->fetchAssoc($req);
     $countValue = json_encode($result);
@@ -121,7 +121,7 @@ $app->get('/admin/rubriques/count', function () use ($app) {
     return new Response($countValue, 200);
 });
 
-$app->get('/admin/rubriques/first', function () use ($app) {
+$app->get('/rubriques/first', function () use ($app) {
     $request = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID ORDER BY menu.position';
     $query = $app['db']->executeQuery($request);
     $results = $query->fetchAll();
@@ -263,7 +263,7 @@ $app->get('/admin/rubriques/desc', function (Request $request) use ($app) {
     return new Response($jsonRubriques, 200);
 });
 
-$app->get('/admin/rubriques/{id}', function ($id) use ($app) {
+$app->get('/rubriques/{id}', function ($id) use ($app) {
     $req = 'SELECT * FROM menu, rubrique WHERE rubrique.menu_id = menu.ID AND menu.ID = ?';
     $result = $app['db']->fetchAssoc($req, array((int) $id));
     if (null == $result) {

@@ -31,7 +31,7 @@ $app->post('/admin/categorie', function (Request $request) use ($app) {
     return new Response('Categorie created', 200);
 });
 
-$app->get('/admin/categories', function () use ($app) {
+$app->get('/categories', function () use ($app) {
     $sqlRequest = 'SELECT * FROM categorie';
     $query = $app['db']->executeQuery($sqlRequest);
     $results = $query->fetchAll();
@@ -47,7 +47,7 @@ $app->get('/admin/categories', function () use ($app) {
     return new Response($jsonCategories, 200);
 });
 
-$app->get('/admin/categories/{id}', function ($id) use ($app) {
+$app->get('/categories/{id}', function ($id) use ($app) {
     $sqlRequest = 'SELECT * FROM categorie WHERE ID = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
     if (null == $result) {

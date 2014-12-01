@@ -21,7 +21,7 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesWithoutRubriques()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques');
+        $client->request('GET', '/rubriques');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
@@ -33,7 +33,7 @@ class RubriqueTest extends WebTestCase
     public function testCountRubriquesWithoutRubriques()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/count');
+        $client->request('GET', '/rubriques/count');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"0"}', $client->getResponse()->getContent());
@@ -45,7 +45,7 @@ class RubriqueTest extends WebTestCase
     public function testGetFirstRubriqueByPositionWithoutRubriques()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/first');
+        $client->request('GET', '/rubriques/first');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
@@ -193,7 +193,7 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriques()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques');
+        $client->request('GET', '/rubriques');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -206,7 +206,7 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreFRWithoutContent()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_fr');
+        $client->request('GET', '/rubriques/titre_fr');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('No content', $client->getResponse()->getContent());
@@ -218,7 +218,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreFRWithoutTitreFR()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_fr', array(), array(), array(), '{"titre_en":"Teaching"}');
+        $client->request('GET', '/rubriques/titre_fr', array(), array(), array(),
+            '{"titre_en":"Teaching"}');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Attribute titre_fr not here', $client->getResponse()->getContent());
@@ -230,7 +231,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreFRWithoutExistingTitreFR()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_fr', array(), array(), array(), '{"titre_fr":"Teaching"}');
+        $client->request('GET', '/rubriques/titre_fr', array(), array(), array(),
+            '{"titre_fr":"Teaching"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
@@ -242,7 +244,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreFRWithExistingTitreFR()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_fr', array(), array(), array(), '{"titre_fr":"Enseignement"}');
+        $client->request('GET', '/rubriques/titre_fr', array(), array(), array(),
+            '{"titre_fr":"Enseignement"}');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -255,7 +258,7 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreENWithoutContent()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_en');
+        $client->request('GET', '/rubriques/titre_en');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('No content', $client->getResponse()->getContent());
@@ -267,7 +270,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreENWithoutTitreEN()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_fr":"Enseignement"}');
+        $client->request('GET', '/rubriques/titre_en', array(), array(), array(),
+            '{"titre_fr":"Enseignement"}');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
         $this->assertEquals('Attribute titre_en not here', $client->getResponse()->getContent());
@@ -279,7 +283,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreENWithoutExistingTitreEN()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_en":"Enseignement"}');
+        $client->request('GET', '/rubriques/titre_en', array(), array(), array(),
+            '{"titre_en":"Enseignement"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No rubriques', $client->getResponse()->getContent());
@@ -291,7 +296,8 @@ class RubriqueTest extends WebTestCase
     public function testGetAllRubriquesByTitreENWithExistingTitreEN()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/titre_en', array(), array(), array(), '{"titre_en":"Teaching"}');
+        $client->request('GET', '/rubriques/titre_en', array(), array(), array(),
+            '{"titre_en":"Teaching"}');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -304,7 +310,7 @@ class RubriqueTest extends WebTestCase
     public function testCountRubrique()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/count');
+        $client->request('GET', '/rubriques/count');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"2"}', $client->getResponse()->getContent());
@@ -316,7 +322,7 @@ class RubriqueTest extends WebTestCase
     public function testGetFirstRubriqueByPosition()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/first');
+        $client->request('GET', '/rubriques/first');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching","actif":"1","position":"1"', $client->getResponse()->getContent());
@@ -328,7 +334,7 @@ class RubriqueTest extends WebTestCase
     public function testGetRubriqueByIdWithoutExistingId()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/1000');
+        $client->request('GET', '/rubriques/1000');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('Rubrique doesn\'t exist', $client->getResponse()->getContent());
@@ -340,7 +346,7 @@ class RubriqueTest extends WebTestCase
     public function testGetRubriqueByIdWithExistingId()
     {
         $client = $this->createClient();
-        $client->request('GET', '/admin/rubriques/1');
+        $client->request('GET', '/rubriques/1');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('"titre_fr":"Enseignement","titre_en":"Teaching"', $client->getResponse()->getContent());

@@ -21,9 +21,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublicationsWithoutPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No publications', $client->getResponse()->getContent());
@@ -35,9 +33,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublicationsByDateWithoutPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/date', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/date');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No publications', $client->getResponse()->getContent());
@@ -49,9 +45,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublicationsByCategorieWithoutPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/categorie', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/categorie');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
         $this->assertEquals('No publications', $client->getResponse()->getContent());
@@ -63,9 +57,7 @@ class PublicationTest extends WebTestCase
     public function testCountPublicationsWithoutPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/count', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/count');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"0"}', $client->getResponse()->getContent());
@@ -256,9 +248,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -271,9 +261,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublicationByDate()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/date', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/date');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -286,9 +274,7 @@ class PublicationTest extends WebTestCase
     public function testGetAllPublicationsByCategorie()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/categorie', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/categorie');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertContains('[{', $client->getResponse()->getContent());
@@ -301,9 +287,7 @@ class PublicationTest extends WebTestCase
     public function testCountPublications()
     {
         $client = $this->createClient();
-        $encoder = new PasswordEncoder();
-        $client->request('GET', '/admin/publications/count', array(), array(), array(),
-            '{"a":"' . $encoder->encodePassword('Admin connected') . '"}');
+        $client->request('GET', '/publications/count');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('{"COUNT(*)":"3"}', $client->getResponse()->getContent());
@@ -364,7 +348,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test GET /publications/filter sans tous les attributs.
      */
-    public function testGetFilterPublicationsWithoutOptionalFields()
+    public function testGetPublicationsFilterWithoutOptionalFields()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
@@ -392,7 +376,7 @@ class PublicationTest extends WebTestCase
     /**
      * Test GET /publications/filter ok.
      */
-    public function testGetFilterPublications()
+    public function testGetPublicationsFilter()
     {
         $client = $this->createClient();
         $encoder = new PasswordEncoder();
