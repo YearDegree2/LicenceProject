@@ -312,6 +312,17 @@ $app->get('/admin/publications/{id}', function (Request $request, $id) use ($app
     return new Response($jsonPublications, 200);
 });
 
+$app->get('/publications/{id}', function ($id) use ($app) {
+    $sqlRequest = 'SELECT * FROM publication WHERE ID = ?';
+    $result = $app['db']->fetchAssoc($sqlRequest, array((int) $id));
+    if (null == $result) {
+        return new Response('Publication doesn\'t exist', 400);
+    }
+    $jsonPublications = json_encode($result);
+
+    return new Response($jsonPublications, 200);
+});
+
 $app->put('/admin/publications/{id}', function (Request $request, $id) use ($app) {
     if (null == $request->getContent()) {
         return new Response('No content', 404);

@@ -589,6 +589,30 @@ class PublicationTest extends WebTestCase
     }
 
     /**
+     * Test GET /publications/id avec un id inexistant.
+     */
+    public function testGetPublicationById2WithoutExistingId()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/publications/1000');
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Publication doesn\'t exist', $client->getResponse()->getContent());
+    }
+
+    /**
+     * Test GET /publications/id avec un id existant.
+     */
+    public function testGetPublicationById2WithExistingId()
+    {
+        $client = $this->createClient();
+        $client->request('GET', '/publications/1');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertContains('Testabilite des services web', $client->getResponse()->getContent());
+    }
+
+    /**
      * Test PUT /publications/id sans contenu.
      */
     public function testPutPublicationByIdWithoutContent()
