@@ -15,14 +15,14 @@ $app->post('/login', function (Request $request) use ($app) {
     $sqlRequest = 'SELECT login, password FROM user WHERE login = ?';
     $result = $app['db']->fetchAssoc($sqlRequest, array($attributes->{'username'}));
     if (null == $result) {
-        return new Response('User don\'t exist', 400);
+        return new Response('User doesn\'t exist', 400);
     }
     $encoder = new PasswordEncoder();
     if ($encoder->verifyPassword($result['password'], $attributes->{'password'})) {
         return new Response($encoder->encodePassword('Admin connected'), 200);
     }
 
-    return new Response('Admin not connected', 400);
+    return new Response('Password false', 400);
 });
 
 return $app;

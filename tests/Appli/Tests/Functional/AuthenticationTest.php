@@ -63,7 +63,7 @@ class AuthenticationTest extends WebTestCase
             '{"username":"toto","password":"admin"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('User don\'t exist', $client->getResponse()->getContent());
+        $this->assertEquals('User doesn\'t exist', $client->getResponse()->getContent());
     }
 
     /**
@@ -76,7 +76,7 @@ class AuthenticationTest extends WebTestCase
             '{"username":"admin","password":"toto"}');
 
         $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertEquals('Admin not connected', $client->getResponse()->getContent());
+        $this->assertEquals('Password false', $client->getResponse()->getContent());
     }
 
     /**
