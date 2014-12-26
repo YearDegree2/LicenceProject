@@ -5,7 +5,7 @@ Licence project by [Nicolas BASCON](https://github.com/nicobascon) and [Yannis R
 
 Proposed by [Sebastien SALVA](http://sebastien.salva.free.fr/), we had to create web services for a teacher-searcher like website. The whole website, using our web services, is [here](https://github.com/mickaelstorm2703/site_chercheur_licence). A Windows 8 application for manage the administration was created [here](https://github.com/YearDegree2/LicenceProjectWindows8).
 
-All paths are in the folder controllers in app/config. If you want to change the database, it's in the file config.php in app/config.
+All paths are in the folder controllers in app. If you want to change the database, it's in the file config.php in app/config.
 
 All functional tests are in the folder Functional in tests/Appli/Tests.
 
